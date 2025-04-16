@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package master;
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
+
+// Singers
+message Singer {
+  int32 id = 1;
+  string name = 2;
+}

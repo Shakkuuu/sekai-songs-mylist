@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package master;
+
+import "master/artist.proto";
+import "master/song.proto";
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
+
+message GetArtistsRequest {}
+
+message GetArtistsResponse {
+  repeated master.Artist artists = 1;
+}
+
+message GetArtistRequest {
+  int32 id = 1;
+}
+
+message GetArtistResponse {
+  master.Artist artists = 1;
+}
+
+message CreateArtistRequest {
+  string name = 1;
+  string kana = 2;
+}
+
+message CreateArtistResponse {}
+
+message GetSongsRequest {}
+
+message GetSongsResponse {
+  repeated master.Song songs = 1;
+}
+
+message GetSongRequest {
+  int32 id = 1;
+}
+
+message GetSongResponse {
+  repeated master.Song song = 1;
+}
+
+message CreateSongRequest {}
+
+service MasterService {
+  rpc GetArtists(GetArtistsRequest) returns (GetArtistsResponse);
+  rpc GetArtist(GetArtistRequest) returns (GetArtistResponse);
+  rpc CreateArtist(CreateArtistRequest) returns (CreateArtistResponse);
+  rpc GetSongs(GetSongsRequest) returns (GetSongsResponse);
+  rpc GetSong(GetSongRequest) returns (GetSongResponse);
+}

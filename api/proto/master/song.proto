@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package master;
+
+import "enums/master.proto";
+import "google/protobuf/timestamp.proto";
+import "master/artist.proto";
+import "master/vocal_pattern.proto";
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
+
+// Songs
+message Song {
+  int32 id = 1;
+  string name = 2;
+  string kana = 3;
+  master.Artist lyrics = 4;
+  master.Artist music = 5;
+  master.Artist arrangement = 6;
+  string thumbnail = 7;
+  string original_video = 8;
+  google.protobuf.Timestamp release_time = 9;
+  bool deleted = 10;
+
+  repeated master.VocalPattern vocal_patterns = 11;
+  repeated enums.MusicVideoType music_video_types = 12;
+}

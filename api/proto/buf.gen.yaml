@@ -1,0 +1,14 @@
+version: v1
+plugins:
+  - plugin: go
+    out: ../../internal/gen
+    opt: paths=source_relative
+  - plugin: go-grpc
+    out: ../../internal/gen
+    opt: paths=source_relative
+  # - plugin: connect-es
+  #   out: ../../web/gen
+  #   opt:
+  #     - target=ts
+  #     - import_style=module
+  #     - use_client=connect

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package master;
+
+import "enums/master.proto";
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
+
+// Charts
+message Chart {
+  int32 id = 1;
+  int32 song_id = 2;
+  enums.DifficultyType difficulty_type = 3;
+  int32 level = 4;
+  string chart_view_link = 5;
+}

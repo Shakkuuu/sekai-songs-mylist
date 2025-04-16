@@ -1,0 +1,11 @@
+version: v1
+lint:
+  use:
+    - STANDARD
+  ignore_only:
+    PACKAGE_VERSION_SUFFIX:
+      - "enums/"
+      - "master/"
+breaking:
+  use:
+    - FILE

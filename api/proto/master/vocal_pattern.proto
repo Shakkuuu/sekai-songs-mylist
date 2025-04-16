@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package master;
+
+import "master/singer.proto";
+import "master/unit.proto";
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
+
+// VocalPatterns
+message VocalPattern {
+  int32 id = 1;
+  string name = 2;
+
+  repeated master.Singer singers = 3;
+  repeated master.Unit units = 4;
+}
