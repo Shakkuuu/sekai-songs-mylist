@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 
+	"connectrpc.com/connect"
+
 	proto_master "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 	"github.com/cockroachdb/errors"
@@ -11,7 +13,6 @@ import (
 //go:generate gotests -w -all $GOFILE
 
 type MasterHandler struct {
-	proto_master.UnimplementedMasterServiceServer
     masterUsecase usecase.MasterUsecase
 }
 
@@ -19,7 +20,7 @@ func NewMasterHandler(masterUsecase usecase.MasterUsecase) *MasterHandler {
     return &MasterHandler{masterUsecase: masterUsecase}
 }
 
-func (h *MasterHandler) GetArtists(ctx context.Context, req *proto_master.GetArtistsRequest) (*proto_master.GetArtistsResponse, error) {
+func (h *MasterHandler) GetArtists(ctx context.Context, req *connect.Request[proto_master.GetArtistsRequest]) (*connect.Response[proto_master.GetArtistsResponse], error) {
     artists, err := h.masterUsecase.ListArtists(ctx)
     if err != nil {
         return nil, errors.WithStack(err)
@@ -34,31 +35,39 @@ func (h *MasterHandler) GetArtists(ctx context.Context, req *proto_master.GetArt
         })
     }
 
-    return &proto_master.GetArtistsResponse{
+    return connect.NewResponse(&proto_master.GetArtistsResponse{
         Artists: protoArtists,
-    }, nil
+    }), nil
 }
 
-func (h *MasterHandler) GetArtist(ctx context.Context, req *proto_master.GetArtistRequest) (*proto_master.GetArtistResponse, error) {
-    artist, err := h.masterUsecase.GetArtistByID(ctx, req.Id)
+func (h *MasterHandler) GetArtist(ctx context.Context, req *connect.Request[proto_master.GetArtistRequest]) (*connect.Response[proto_master.GetArtistResponse], error) {
+    artist, err := h.masterUsecase.GetArtistByID(ctx, req.Msg.GetId())
     if err != nil {
         return nil, errors.WithStack(err)
     }
 
-    return &proto_master.GetArtistResponse{
+    return connect.NewResponse(&proto_master.GetArtistResponse{
         Artists: &proto_master.Artist{
             Id:   int32(artist.ID),
             Name: artist.Name,
             Kana: artist.Kana,
         },
-    }, nil
+    }), nil
 }
 
-func (h *MasterHandler) CreateArtist(ctx context.Context, req *proto_master.CreateArtistRequest) (*proto_master.CreateArtistResponse, error) {
-    err := h.masterUsecase.CreateArtist(ctx, req.Name, req.Kana)
+func (h *MasterHandler) CreateArtist(ctx context.Context, req *connect.Request[proto_master.CreateArtistRequest]) (*connect.Response[proto_master.CreateArtistResponse], error) {
+    err := h.masterUsecase.CreateArtist(ctx, req.Msg.GetName(), req.Msg.GetKana())
     if err != nil {
         return nil, errors.WithStack(err)
     }
 
-    return &proto_master.CreateArtistResponse{}, nil
+    return connect.NewResponse(&proto_master.CreateArtistResponse{}), nil
+}
+
+func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto_master.GetSongsRequest]) (*connect.Response[proto_master.GetSongsResponse], error) {
+    return nil, connect.NewError(connect.CodeUnimplemented, errors.New("GetSong not implemented"))
+}
+
+func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_master.GetSongRequest]) (*connect.Response[proto_master.GetSongResponse], error) {
+    return nil, connect.NewError(connect.CodeUnimplemented, errors.New("GetSong not implemented"))
 }

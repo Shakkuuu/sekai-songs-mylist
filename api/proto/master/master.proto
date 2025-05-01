@@ -2,52 +2,152 @@ syntax = "proto3";
 
 package master;
 
+import "google/protobuf/timestamp.proto";
+import "enums/master.proto";
 import "master/artist.proto";
+import "master/singer.proto";
+import "master/unit.proto";
+import "master/vocal_pattern.proto";
 import "master/song.proto";
+import "master/chart.proto";
 
 option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
 
+// Artist
 message GetArtistsRequest {}
-
 message GetArtistsResponse {
   repeated master.Artist artists = 1;
 }
-
 message GetArtistRequest {
   int32 id = 1;
 }
-
 message GetArtistResponse {
-  master.Artist artists = 1;
+  master.Artist artist = 1;
 }
-
 message CreateArtistRequest {
   string name = 1;
   string kana = 2;
 }
-
 message CreateArtistResponse {}
 
-message GetSongsRequest {}
+// Singer
+message GetSingersRequest {}
+message GetSingersResponse {
+  repeated master.Singer singers = 1;
+}
+message GetSingerRequest {
+  int32 id = 1;
+}
+message GetSingerResponse {
+  master.Singer singer = 1;
+}
+message CreateSingerRequest {
+  string name = 1;
+}
+message CreateSingerResponse {}
 
+// Unit
+message GetUnitsRequest {}
+message GetUnitsResponse {
+  repeated master.Unit units = 1;
+}
+message GetUnitRequest {
+  int32 id = 1;
+}
+message GetUnitResponse {
+  master.Unit unit = 1;
+}
+message CreateUnitRequest {
+  string name = 1;
+}
+message CreateUnitResponse {}
+
+// VocalPattern
+message GetVocalPatternsRequest {}
+message GetVocalPatternsResponse {
+  repeated master.VocalPattern vocal_patterns = 1;
+}
+message GetVocalPatternRequest {
+  int32 id = 1;
+}
+message GetVocalPatternResponse {
+  master.VocalPattern vocal_pattern = 1;
+}
+message CreateVocalPatternRequest {
+  string name = 1;
+  repeated master.Singer singers = 2;
+  repeated master.Unit units = 3;
+}
+message CreateVocalPatternResponse {}
+
+// Song
+message GetSongsRequest {}
 message GetSongsResponse {
   repeated master.Song songs = 1;
 }
-
 message GetSongRequest {
   int32 id = 1;
 }
-
 message GetSongResponse {
   repeated master.Song song = 1;
 }
+message CreateSongRequest {
+  string name = 1;
+  string kana = 2;
+  master.Artist lyrics = 3;
+  master.Artist music = 4;
+  master.Artist arrangement = 5;
+  string thumbnail = 6;
+  string original_video = 7;
+  google.protobuf.Timestamp release_time = 8;
+  bool deleted = 9;
+  repeated master.VocalPattern vocal_patterns = 10;
+  repeated enums.MusicVideoType music_video_types = 11;
+}
+message CreateSongResponse {}
 
-message CreateSongRequest {}
+// Chart
+message GetChartsRequest {}
+message GetChartsResponse {
+  repeated master.Chart charts = 1;
+}
+message GetChartRequest {
+  int32 id = 1;
+}
+message GetChartResponse {
+  repeated master.Chart chart = 1;
+}
+message CreateChartRequest {
+  int32 song_id = 1;
+  enums.DifficultyType difficulty_type = 2;
+  int32 level = 3;
+  string chart_view_link = 4;
+}
+message CreateChartResponse {}
 
 service MasterService {
+  // Artist
   rpc GetArtists(GetArtistsRequest) returns (GetArtistsResponse);
   rpc GetArtist(GetArtistRequest) returns (GetArtistResponse);
   rpc CreateArtist(CreateArtistRequest) returns (CreateArtistResponse);
+  // Singer
+  rpc GetSingers(GetSingersRequest) returns (GetSingersResponse);
+  rpc GetSinger(GetSingerRequest) returns (GetSingerResponse);
+  rpc CreateSinger(CreateSingerRequest) returns (CreateSingerResponse);
+  // Unit
+  rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse);
+  rpc GetUnit(GetUnitRequest) returns (GetUnitResponse);
+  rpc CreateUnit(CreateUnitRequest) returns (CreateUnitResponse);
+  // VocalPattern
+  rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+  rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+  rpc CreateVocalPattern(CreateVocalPatternRequest) returns (CreateVocalPatternResponse);
+  // Song
   rpc GetSongs(GetSongsRequest) returns (GetSongsResponse);
   rpc GetSong(GetSongRequest) returns (GetSongResponse);
+  rpc CreateSong(CreateSongRequest) returns (CreateSongResponse);
+  // Chart
+  rpc GetCharts(GetChartsRequest) returns (GetChartsResponse);
+  rpc GetChart(GetChartRequest) returns (GetChartResponse);
+  rpc CreateChart(CreateChartRequest) returns (CreateChartResponse);
 }

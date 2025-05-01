@@ -1,8 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
-	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
@@ -10,10 +11,10 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
-	"google.golang.org/grpc"
+	"github.com/rs/cors"
 
 	"github.com/Shakkuuu/sekai-songs-mylist/config"
-	proto_master "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master"
+	proto_master_connect "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master/masterconnect"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/db"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/handler"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/repository"
@@ -40,39 +41,53 @@ func main() {
 
     dbConn, queries, err := db.Init(dbConfig)
     if err != nil {
-        log.Fatalf("Failed to initialize database: %v", err)
+        log.Printf("Failed to initialize database: %v", errors.GetReportableStackTrace(err))
+		os.Exit(1)
     }
     defer dbConn.Close()
 
     masterRepository := repository.NewMasterRepository(queries)
-    artistUsecase := usecase.NewMasterUsecase(masterRepository)
-    artistHandler := handler.NewMasterHandler(artistUsecase)
+    masterUsecase := usecase.NewMasterUsecase(masterRepository)
+    masterHandler := handler.NewMasterHandler(masterUsecase)
 
-    // gRPC server setup
-    grpcServer := grpc.NewServer()
-    proto_master.RegisterMasterServiceServer(grpcServer, artistHandler)
+	mux := http.NewServeMux()
+	mux.Handle(
+		proto_master_connect.NewMasterServiceHandler(masterHandler),
+	)
 
-	// Start gRPC server
-    listener, err := net.Listen("tcp", ":"+strconv.Itoa(cfg.ServerPort))
-    if err != nil {
-        log.Fatalf("Failed to listen on port "+strconv.Itoa(cfg.ServerPort)+": %v", err)
-    }
-    log.Println("gRPC server is running on port "+strconv.Itoa(cfg.ServerPort))
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"}, // フロントエンドのURL
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Content-Type", "connect-protocol-version"},
+		AllowCredentials: true,
+	})
+	handler := corsHandler.Handler(mux)
 
-    quit := make(chan os.Signal, 1)
+	server := &http.Server{
+		Addr:    ":"+strconv.Itoa(cfg.ServerPort),
+		Handler: handler,
+	}
+
+	log.Println("Starting server on :"+strconv.Itoa(cfg.ServerPort))
+
+	quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
     go func() {
-        if err := grpcServer.Serve(listener); err != nil {
-            log.Fatalf("Failed to serve gRPC server: %v", err)
-        }
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatalf("Failed to serve server: %v", err)
+		}
     }()
 
     <-quit
-    log.Println("Shutting down gRPC server...")
+    log.Println("Shutting down server...")
 
-    grpcServer.GracefulStop()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    time.Sleep(10 * time.Second)
-    log.Println("gRPC server stopped")
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+
+	log.Println("Server stopped gracefully")
 }

@@ -6,9 +6,12 @@ plugins:
   - plugin: go-grpc
     out: ../../internal/gen
     opt: paths=source_relative
-  # - plugin: connect-es
-  #   out: ../../web/gen
-  #   opt:
-  #     - target=ts
-  #     - import_style=module
-  #     - use_client=connect
+  - plugin: connect-go
+    out: ../../internal/gen
+    opt: paths=source_relative
+  - plugin: es
+    out: ../../view/src/gen
+    opt: target=ts
+  - plugin: connect-es
+    out: ../../view/src/gen
+    opt: target=ts,import_extension=.js

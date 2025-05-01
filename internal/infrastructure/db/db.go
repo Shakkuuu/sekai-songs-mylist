@@ -3,9 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/db/sqlcgen"
+	"github.com/cockroachdb/errors"
 	_ "github.com/lib/pq"
 )
 
@@ -18,6 +19,8 @@ type DBConfing struct {
 }
 
 func Init(config DBConfing) (*sql.DB, *sqlcgen.Queries, error) {
+	var err error
+	var db *sql.DB
 	CONNECT := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
 		config.Host,
 		config.User,
@@ -25,14 +28,30 @@ func Init(config DBConfing) (*sql.DB, *sqlcgen.Queries, error) {
 		config.DBName,
 		config.Port,
 	)
-	db, err := sql.Open("postgres", CONNECT)
+
+	// 接続できるまで一定回数リトライ
+	count := 0
+	db, err = sql.Open("postgres", CONNECT)
 	if err != nil {
-		log.Fatal("Failed to connect to database: %w", err)
+		for {
+			if err == nil {
+				fmt.Println("")
+				break
+			}
+			fmt.Print(".")
+			time.Sleep(time.Second)
+			count++
+			if count > 180 { // countが180になるまでリトライ
+				fmt.Println("")
+				return db, nil, errors.WithStack(errors.New("db Inin error. count over 180."))
+			}
+			db, err = sql.Open("postgres", CONNECT)
+		}
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, nil, fmt.Errorf("faild to ping detabase: %w", err)
-	}
+	// if err := db.Ping(); err != nil {
+	// 	return nil, nil, errors.WithStack(err)
+	// }
 
 	queries := sqlcgen.New(db)
 	return db, queries, nil

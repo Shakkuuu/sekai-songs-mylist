@@ -33,10 +33,13 @@ func (u *masterUsecase) ListArtists(ctx context.Context) ([]*entity.Artist, erro
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	if artists == nil {
+		return []*entity.Artist{}, nil
+	}
 
 	domainArtists := make([]*entity.Artist, len(artists))
-	for _, artist := range artists {
-		domainArtists = append(domainArtists, sqlToDomainArtist(artist))
+	for i, artist := range artists {
+		domainArtists[i] = sqlToDomainArtist(artist)
 	}
 
 	return domainArtists, nil

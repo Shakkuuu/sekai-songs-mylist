@@ -3,7 +3,7 @@ services:
     build: .
     container_name: app
     ports:
-      - "50051:${SERVER_PORT}"
+      - "8080:${SERVER_PORT}"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_USER_NAME=${DB_USER_NAME}
@@ -27,6 +27,7 @@ services:
       TZ: Asia/Tokyo
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db/schema:/docker-entrypoint-initdb.d
     restart: always
     tty: true
 
