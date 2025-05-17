@@ -6,4 +6,4 @@ const transport = createConnectTransport({
   baseUrl: "http://localhost:8080", // gRPC Gateway の URL に合わせて
 });
 
-export const artistClient = createPromiseClient(MasterService, transport);
+export const masterClient = createPromiseClient(MasterService, transport);

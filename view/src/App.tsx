@@ -1,12 +1,32 @@
-import { ArtistList } from "./components/ArtistList";
+import { ArtistList } from "./components/ListArtist";
+import { CreateArtist } from "./components/CreateArtist";
+import { SingerList } from "./components/ListSinger";
+import { CreateSinger } from "./components/CreateSinger";
+import { UnitList } from "./components/ListUnit";
+import { CreateUnit } from "./components/CreateUnit";
+import { SongList } from "./components/ListSong";
+import { CreateSong } from "./components/CreateSong";
+import { CreateVocalPattern } from "./components/CreateVocalPattern";
+import { ChartList } from "./components/ListChart";
+import { CreateChart } from "./components/CreateChart";
 
-function App() {
+export const App = () => {
   return (
     <div>
-      <h1>セカイソングマイリスト</h1>
+      <h1>Sekai Songs Mylist</h1>
       <ArtistList />
+      <CreateArtist />
+      <SingerList />
+      <CreateSinger />
+      <UnitList />
+      <CreateUnit />
+      <CreateVocalPattern />
+      <SongList />
+      <CreateSong />
+      <ChartList />
+      <CreateChart />
     </div>
   );
-}
+};
 
 export default App;

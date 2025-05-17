@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { artistClient } from "../lib/grpcClient";
+import { masterClient } from "../lib/grpcClient";
 import { Artist } from "../gen/master/artist_pb"; // 型情報（optional）
 
 export const ArtistList = () => {
@@ -7,7 +7,7 @@ export const ArtistList = () => {
 
   useEffect(() => {
     const fetchArtists = async () => {
-      const response = await artistClient.getArtists({});
+      const response = await masterClient.getArtists({});
       setArtists(response.artists);
     };
 
@@ -19,7 +19,7 @@ export const ArtistList = () => {
       <h2>アーティスト一覧</h2>
       <ul>
         {artists.map((artist) => (
-          <li key={artist.id}>{artist.name}</li>
+          <li key={artist.id}>{artist.id} : {artist.name}</li>
         ))}
       </ul>
     </div>

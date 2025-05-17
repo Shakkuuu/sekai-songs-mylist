@@ -92,6 +92,12 @@ LEFT JOIN units u ON vpu.unit_id = u.id
 LEFT JOIN song_music_video_types smvt ON smvt.song_id = s.id
 ORDER BY s.id;
 
--- name: InsertSong :exec
+-- name: InsertSong :one
 INSERT INTO songs (name, kana, lyrics_id, music_id, arrangement_id, thumbnail, original_video, release_time, deleted)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING *;
+
+-- name: ExistsSong :one
+SELECT EXISTS (
+  SELECT 1 FROM songs WHERE id = $1
+) AS exists;

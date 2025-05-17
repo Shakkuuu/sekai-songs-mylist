@@ -49,10 +49,6 @@ func Init(config DBConfing) (*sql.DB, *sqlcgen.Queries, error) {
 		}
 	}
 
-	// if err := db.Ping(); err != nil {
-	// 	return nil, nil, errors.WithStack(err)
-	// }
-
 	queries := sqlcgen.New(db)
 	return db, queries, nil
 }

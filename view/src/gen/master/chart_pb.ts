@@ -5,6 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
+import { Song } from "./song_pb.js";
 import { DifficultyType } from "../enums/master_pb.js";
 
 /**
@@ -19,9 +20,9 @@ export class Chart extends Message<Chart> {
   id = 0;
 
   /**
-   * @generated from field: int32 song_id = 2;
+   * @generated from field: master.Song song = 2;
    */
-  songId = 0;
+  song?: Song;
 
   /**
    * @generated from field: enums.DifficultyType difficulty_type = 3;
@@ -47,7 +48,7 @@ export class Chart extends Message<Chart> {
   static readonly typeName = "master.Chart";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 2, name: "song_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "song", kind: "message", T: Song },
     { no: 3, name: "difficulty_type", kind: "enum", T: proto3.getEnumType(DifficultyType) },
     { no: 4, name: "level", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 5, name: "chart_view_link", kind: "scalar", T: 9 /* ScalarType.STRING */ },

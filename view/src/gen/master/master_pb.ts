@@ -4,11 +4,17 @@
 // @ts-nocheck
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import { Message, proto3, Timestamp } from "@bufbuild/protobuf";
 import { Artist } from "./artist_pb.js";
+import { Singer } from "./singer_pb.js";
+import { Unit } from "./unit_pb.js";
 import { Song } from "./song_pb.js";
+import { DifficultyType, MusicVideoType } from "../enums/master_pb.js";
+import { Chart } from "./chart_pb.js";
 
 /**
+ * Artist
+ *
  * @generated from message master.GetArtistsRequest
  */
 export class GetArtistsRequest extends Message<GetArtistsRequest> {
@@ -118,9 +124,9 @@ export class GetArtistRequest extends Message<GetArtistRequest> {
  */
 export class GetArtistResponse extends Message<GetArtistResponse> {
   /**
-   * @generated from field: master.Artist artists = 1;
+   * @generated from field: master.Artist artist = 1;
    */
-  artists?: Artist;
+  artist?: Artist;
 
   constructor(data?: PartialMessage<GetArtistResponse>) {
     super();
@@ -130,7 +136,7 @@ export class GetArtistResponse extends Message<GetArtistResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "master.GetArtistResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "artists", kind: "message", T: Artist },
+    { no: 1, name: "artist", kind: "message", T: Artist },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetArtistResponse {
@@ -225,6 +231,536 @@ export class CreateArtistResponse extends Message<CreateArtistResponse> {
 }
 
 /**
+ * Singer
+ *
+ * @generated from message master.GetSingersRequest
+ */
+export class GetSingersRequest extends Message<GetSingersRequest> {
+  constructor(data?: PartialMessage<GetSingersRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetSingersRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSingersRequest {
+    return new GetSingersRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSingersRequest {
+    return new GetSingersRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSingersRequest {
+    return new GetSingersRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSingersRequest | PlainMessage<GetSingersRequest> | undefined, b: GetSingersRequest | PlainMessage<GetSingersRequest> | undefined): boolean {
+    return proto3.util.equals(GetSingersRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetSingersResponse
+ */
+export class GetSingersResponse extends Message<GetSingersResponse> {
+  /**
+   * @generated from field: repeated master.Singer singers = 1;
+   */
+  singers: Singer[] = [];
+
+  constructor(data?: PartialMessage<GetSingersResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetSingersResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "singers", kind: "message", T: Singer, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSingersResponse {
+    return new GetSingersResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSingersResponse {
+    return new GetSingersResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSingersResponse {
+    return new GetSingersResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSingersResponse | PlainMessage<GetSingersResponse> | undefined, b: GetSingersResponse | PlainMessage<GetSingersResponse> | undefined): boolean {
+    return proto3.util.equals(GetSingersResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetSingerRequest
+ */
+export class GetSingerRequest extends Message<GetSingerRequest> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id = 0;
+
+  constructor(data?: PartialMessage<GetSingerRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetSingerRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSingerRequest {
+    return new GetSingerRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSingerRequest {
+    return new GetSingerRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSingerRequest {
+    return new GetSingerRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSingerRequest | PlainMessage<GetSingerRequest> | undefined, b: GetSingerRequest | PlainMessage<GetSingerRequest> | undefined): boolean {
+    return proto3.util.equals(GetSingerRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetSingerResponse
+ */
+export class GetSingerResponse extends Message<GetSingerResponse> {
+  /**
+   * @generated from field: master.Singer singer = 1;
+   */
+  singer?: Singer;
+
+  constructor(data?: PartialMessage<GetSingerResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetSingerResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "singer", kind: "message", T: Singer },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSingerResponse {
+    return new GetSingerResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSingerResponse {
+    return new GetSingerResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSingerResponse {
+    return new GetSingerResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSingerResponse | PlainMessage<GetSingerResponse> | undefined, b: GetSingerResponse | PlainMessage<GetSingerResponse> | undefined): boolean {
+    return proto3.util.equals(GetSingerResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateSingerRequest
+ */
+export class CreateSingerRequest extends Message<CreateSingerRequest> {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name = "";
+
+  constructor(data?: PartialMessage<CreateSingerRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateSingerRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSingerRequest {
+    return new CreateSingerRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateSingerRequest {
+    return new CreateSingerRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateSingerRequest {
+    return new CreateSingerRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateSingerRequest | PlainMessage<CreateSingerRequest> | undefined, b: CreateSingerRequest | PlainMessage<CreateSingerRequest> | undefined): boolean {
+    return proto3.util.equals(CreateSingerRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateSingerResponse
+ */
+export class CreateSingerResponse extends Message<CreateSingerResponse> {
+  constructor(data?: PartialMessage<CreateSingerResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateSingerResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSingerResponse {
+    return new CreateSingerResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateSingerResponse {
+    return new CreateSingerResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateSingerResponse {
+    return new CreateSingerResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateSingerResponse | PlainMessage<CreateSingerResponse> | undefined, b: CreateSingerResponse | PlainMessage<CreateSingerResponse> | undefined): boolean {
+    return proto3.util.equals(CreateSingerResponse, a, b);
+  }
+}
+
+/**
+ * Unit
+ *
+ * @generated from message master.GetUnitsRequest
+ */
+export class GetUnitsRequest extends Message<GetUnitsRequest> {
+  constructor(data?: PartialMessage<GetUnitsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetUnitsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetUnitsRequest {
+    return new GetUnitsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetUnitsRequest {
+    return new GetUnitsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetUnitsRequest {
+    return new GetUnitsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetUnitsRequest | PlainMessage<GetUnitsRequest> | undefined, b: GetUnitsRequest | PlainMessage<GetUnitsRequest> | undefined): boolean {
+    return proto3.util.equals(GetUnitsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetUnitsResponse
+ */
+export class GetUnitsResponse extends Message<GetUnitsResponse> {
+  /**
+   * @generated from field: repeated master.Unit units = 1;
+   */
+  units: Unit[] = [];
+
+  constructor(data?: PartialMessage<GetUnitsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetUnitsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "units", kind: "message", T: Unit, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetUnitsResponse {
+    return new GetUnitsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetUnitsResponse {
+    return new GetUnitsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetUnitsResponse {
+    return new GetUnitsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetUnitsResponse | PlainMessage<GetUnitsResponse> | undefined, b: GetUnitsResponse | PlainMessage<GetUnitsResponse> | undefined): boolean {
+    return proto3.util.equals(GetUnitsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetUnitRequest
+ */
+export class GetUnitRequest extends Message<GetUnitRequest> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id = 0;
+
+  constructor(data?: PartialMessage<GetUnitRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetUnitRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetUnitRequest {
+    return new GetUnitRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetUnitRequest {
+    return new GetUnitRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetUnitRequest {
+    return new GetUnitRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetUnitRequest | PlainMessage<GetUnitRequest> | undefined, b: GetUnitRequest | PlainMessage<GetUnitRequest> | undefined): boolean {
+    return proto3.util.equals(GetUnitRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetUnitResponse
+ */
+export class GetUnitResponse extends Message<GetUnitResponse> {
+  /**
+   * @generated from field: master.Unit unit = 1;
+   */
+  unit?: Unit;
+
+  constructor(data?: PartialMessage<GetUnitResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetUnitResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "unit", kind: "message", T: Unit },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetUnitResponse {
+    return new GetUnitResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetUnitResponse {
+    return new GetUnitResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetUnitResponse {
+    return new GetUnitResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetUnitResponse | PlainMessage<GetUnitResponse> | undefined, b: GetUnitResponse | PlainMessage<GetUnitResponse> | undefined): boolean {
+    return proto3.util.equals(GetUnitResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateUnitRequest
+ */
+export class CreateUnitRequest extends Message<CreateUnitRequest> {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name = "";
+
+  constructor(data?: PartialMessage<CreateUnitRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateUnitRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateUnitRequest {
+    return new CreateUnitRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateUnitRequest {
+    return new CreateUnitRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateUnitRequest {
+    return new CreateUnitRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateUnitRequest | PlainMessage<CreateUnitRequest> | undefined, b: CreateUnitRequest | PlainMessage<CreateUnitRequest> | undefined): boolean {
+    return proto3.util.equals(CreateUnitRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateUnitResponse
+ */
+export class CreateUnitResponse extends Message<CreateUnitResponse> {
+  constructor(data?: PartialMessage<CreateUnitResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateUnitResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateUnitResponse {
+    return new CreateUnitResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateUnitResponse {
+    return new CreateUnitResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateUnitResponse {
+    return new CreateUnitResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateUnitResponse | PlainMessage<CreateUnitResponse> | undefined, b: CreateUnitResponse | PlainMessage<CreateUnitResponse> | undefined): boolean {
+    return proto3.util.equals(CreateUnitResponse, a, b);
+  }
+}
+
+/**
+ * VocalPattern
+ * message GetVocalPatternsRequest {}
+ * message GetVocalPatternsResponse {
+ *   repeated master.VocalPattern vocal_patterns = 1;
+ * }
+ * message GetVocalPatternRequest {
+ *   int32 id = 1;
+ * }
+ * message GetVocalPatternResponse {
+ *   master.VocalPattern vocal_pattern = 1;
+ * }
+ *
+ * @generated from message master.CreateVocalPatternRequest
+ */
+export class CreateVocalPatternRequest extends Message<CreateVocalPatternRequest> {
+  /**
+   * @generated from field: int32 song_id = 1;
+   */
+  songId = 0;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name = "";
+
+  /**
+   * @generated from field: repeated int32 singer_ids = 3;
+   */
+  singerIds: number[] = [];
+
+  /**
+   * @generated from field: repeated int32 singer_positions = 4;
+   */
+  singerPositions: number[] = [];
+
+  /**
+   * @generated from field: repeated int32 unit_ids = 5;
+   */
+  unitIds: number[] = [];
+
+  constructor(data?: PartialMessage<CreateVocalPatternRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateVocalPatternRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "song_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "singer_ids", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
+    { no: 4, name: "singer_positions", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
+    { no: 5, name: "unit_ids", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateVocalPatternRequest {
+    return new CreateVocalPatternRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateVocalPatternRequest {
+    return new CreateVocalPatternRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateVocalPatternRequest {
+    return new CreateVocalPatternRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateVocalPatternRequest | PlainMessage<CreateVocalPatternRequest> | undefined, b: CreateVocalPatternRequest | PlainMessage<CreateVocalPatternRequest> | undefined): boolean {
+    return proto3.util.equals(CreateVocalPatternRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateVocalPatternResponse
+ */
+export class CreateVocalPatternResponse extends Message<CreateVocalPatternResponse> {
+  constructor(data?: PartialMessage<CreateVocalPatternResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateVocalPatternResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateVocalPatternResponse {
+    return new CreateVocalPatternResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateVocalPatternResponse {
+    return new CreateVocalPatternResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateVocalPatternResponse {
+    return new CreateVocalPatternResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateVocalPatternResponse | PlainMessage<CreateVocalPatternResponse> | undefined, b: CreateVocalPatternResponse | PlainMessage<CreateVocalPatternResponse> | undefined): boolean {
+    return proto3.util.equals(CreateVocalPatternResponse, a, b);
+  }
+}
+
+/**
+ * Song
+ *
  * @generated from message master.GetSongsRequest
  */
 export class GetSongsRequest extends Message<GetSongsRequest> {
@@ -370,6 +906,56 @@ export class GetSongResponse extends Message<GetSongResponse> {
  * @generated from message master.CreateSongRequest
  */
 export class CreateSongRequest extends Message<CreateSongRequest> {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name = "";
+
+  /**
+   * @generated from field: string kana = 2;
+   */
+  kana = "";
+
+  /**
+   * @generated from field: int32 lyrics_id = 3;
+   */
+  lyricsId = 0;
+
+  /**
+   * @generated from field: int32 music_id = 4;
+   */
+  musicId = 0;
+
+  /**
+   * @generated from field: int32 arrangement_id = 5;
+   */
+  arrangementId = 0;
+
+  /**
+   * @generated from field: string thumbnail = 6;
+   */
+  thumbnail = "";
+
+  /**
+   * @generated from field: string original_video = 7;
+   */
+  originalVideo = "";
+
+  /**
+   * @generated from field: google.protobuf.Timestamp release_time = 8;
+   */
+  releaseTime?: Timestamp;
+
+  /**
+   * @generated from field: bool deleted = 9;
+   */
+  deleted = false;
+
+  /**
+   * @generated from field: repeated enums.MusicVideoType music_video_types = 10;
+   */
+  musicVideoTypes: MusicVideoType[] = [];
+
   constructor(data?: PartialMessage<CreateSongRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -378,6 +964,16 @@ export class CreateSongRequest extends Message<CreateSongRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "master.CreateSongRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "kana", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "lyrics_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 4, name: "music_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 5, name: "arrangement_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 6, name: "thumbnail", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "original_video", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 8, name: "release_time", kind: "message", T: Timestamp },
+    { no: 9, name: "deleted", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 10, name: "music_video_types", kind: "enum", T: proto3.getEnumType(MusicVideoType), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSongRequest {
@@ -394,6 +990,267 @@ export class CreateSongRequest extends Message<CreateSongRequest> {
 
   static equals(a: CreateSongRequest | PlainMessage<CreateSongRequest> | undefined, b: CreateSongRequest | PlainMessage<CreateSongRequest> | undefined): boolean {
     return proto3.util.equals(CreateSongRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateSongResponse
+ */
+export class CreateSongResponse extends Message<CreateSongResponse> {
+  constructor(data?: PartialMessage<CreateSongResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateSongResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSongResponse {
+    return new CreateSongResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateSongResponse {
+    return new CreateSongResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateSongResponse {
+    return new CreateSongResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateSongResponse | PlainMessage<CreateSongResponse> | undefined, b: CreateSongResponse | PlainMessage<CreateSongResponse> | undefined): boolean {
+    return proto3.util.equals(CreateSongResponse, a, b);
+  }
+}
+
+/**
+ * Chart
+ *
+ * @generated from message master.GetChartsRequest
+ */
+export class GetChartsRequest extends Message<GetChartsRequest> {
+  constructor(data?: PartialMessage<GetChartsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetChartsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChartsRequest {
+    return new GetChartsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChartsRequest {
+    return new GetChartsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChartsRequest {
+    return new GetChartsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChartsRequest | PlainMessage<GetChartsRequest> | undefined, b: GetChartsRequest | PlainMessage<GetChartsRequest> | undefined): boolean {
+    return proto3.util.equals(GetChartsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetChartsResponse
+ */
+export class GetChartsResponse extends Message<GetChartsResponse> {
+  /**
+   * @generated from field: repeated master.Chart charts = 1;
+   */
+  charts: Chart[] = [];
+
+  constructor(data?: PartialMessage<GetChartsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetChartsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "charts", kind: "message", T: Chart, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChartsResponse {
+    return new GetChartsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChartsResponse {
+    return new GetChartsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChartsResponse {
+    return new GetChartsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChartsResponse | PlainMessage<GetChartsResponse> | undefined, b: GetChartsResponse | PlainMessage<GetChartsResponse> | undefined): boolean {
+    return proto3.util.equals(GetChartsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetChartRequest
+ */
+export class GetChartRequest extends Message<GetChartRequest> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id = 0;
+
+  constructor(data?: PartialMessage<GetChartRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetChartRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChartRequest {
+    return new GetChartRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChartRequest {
+    return new GetChartRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChartRequest {
+    return new GetChartRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChartRequest | PlainMessage<GetChartRequest> | undefined, b: GetChartRequest | PlainMessage<GetChartRequest> | undefined): boolean {
+    return proto3.util.equals(GetChartRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.GetChartResponse
+ */
+export class GetChartResponse extends Message<GetChartResponse> {
+  /**
+   * @generated from field: repeated master.Chart chart = 1;
+   */
+  chart: Chart[] = [];
+
+  constructor(data?: PartialMessage<GetChartResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.GetChartResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "chart", kind: "message", T: Chart, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChartResponse {
+    return new GetChartResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetChartResponse {
+    return new GetChartResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetChartResponse {
+    return new GetChartResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetChartResponse | PlainMessage<GetChartResponse> | undefined, b: GetChartResponse | PlainMessage<GetChartResponse> | undefined): boolean {
+    return proto3.util.equals(GetChartResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateChartRequest
+ */
+export class CreateChartRequest extends Message<CreateChartRequest> {
+  /**
+   * @generated from field: int32 song_id = 1;
+   */
+  songId = 0;
+
+  /**
+   * @generated from field: enums.DifficultyType difficulty_type = 2;
+   */
+  difficultyType = DifficultyType.UNSPECIFIED;
+
+  /**
+   * @generated from field: int32 level = 3;
+   */
+  level = 0;
+
+  /**
+   * @generated from field: string chart_view_link = 4;
+   */
+  chartViewLink = "";
+
+  constructor(data?: PartialMessage<CreateChartRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateChartRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "song_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "difficulty_type", kind: "enum", T: proto3.getEnumType(DifficultyType) },
+    { no: 3, name: "level", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 4, name: "chart_view_link", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateChartRequest {
+    return new CreateChartRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateChartRequest {
+    return new CreateChartRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateChartRequest {
+    return new CreateChartRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateChartRequest | PlainMessage<CreateChartRequest> | undefined, b: CreateChartRequest | PlainMessage<CreateChartRequest> | undefined): boolean {
+    return proto3.util.equals(CreateChartRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message master.CreateChartResponse
+ */
+export class CreateChartResponse extends Message<CreateChartResponse> {
+  constructor(data?: PartialMessage<CreateChartResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "master.CreateChartResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateChartResponse {
+    return new CreateChartResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateChartResponse {
+    return new CreateChartResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateChartResponse {
+    return new CreateChartResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateChartResponse | PlainMessage<CreateChartResponse> | undefined, b: CreateChartResponse | PlainMessage<CreateChartResponse> | undefined): boolean {
+    return proto3.util.equals(CreateChartResponse, a, b);
   }
 }
 

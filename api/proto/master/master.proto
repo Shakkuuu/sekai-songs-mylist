@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package master;
 
-import "google/protobuf/timestamp.proto";
 import "enums/master.proto";
+import "google/protobuf/timestamp.proto";
 import "master/artist.proto";
-import "master/singer.proto";
-import "master/unit.proto";
-import "master/vocal_pattern.proto";
-import "master/song.proto";
 import "master/chart.proto";
+import "master/singer.proto";
+import "master/song.proto";
+import "master/unit.proto";
+import "validate/validate.proto";
 
 option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
 
@@ -25,8 +25,14 @@ message GetArtistResponse {
   master.Artist artist = 1;
 }
 message CreateArtistRequest {
-  string name = 1;
-  string kana = 2;
+  string name = 1 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+  string kana = 2 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
 }
 message CreateArtistResponse {}
 
@@ -42,7 +48,10 @@ message GetSingerResponse {
   master.Singer singer = 1;
 }
 message CreateSingerRequest {
-  string name = 1;
+  string name = 1 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
 }
 message CreateSingerResponse {}
 
@@ -58,25 +67,33 @@ message GetUnitResponse {
   master.Unit unit = 1;
 }
 message CreateUnitRequest {
-  string name = 1;
+  string name = 1 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
 }
 message CreateUnitResponse {}
 
 // VocalPattern
-message GetVocalPatternsRequest {}
-message GetVocalPatternsResponse {
-  repeated master.VocalPattern vocal_patterns = 1;
-}
-message GetVocalPatternRequest {
-  int32 id = 1;
-}
-message GetVocalPatternResponse {
-  master.VocalPattern vocal_pattern = 1;
-}
+// message GetVocalPatternsRequest {}
+// message GetVocalPatternsResponse {
+//   repeated master.VocalPattern vocal_patterns = 1;
+// }
+// message GetVocalPatternRequest {
+//   int32 id = 1;
+// }
+// message GetVocalPatternResponse {
+//   master.VocalPattern vocal_pattern = 1;
+// }
 message CreateVocalPatternRequest {
-  string name = 1;
-  repeated master.Singer singers = 2;
-  repeated master.Unit units = 3;
+  int32 song_id = 1 [(validate.rules).int32.gte = 1];
+  string name = 2 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+  repeated int32 singer_ids = 3 [(validate.rules).repeated.items.int32.gte = 1];
+  repeated int32 singer_positions = 4 [(validate.rules).repeated.items.int32.gte = 1];
+  repeated int32 unit_ids = 5 [(validate.rules).repeated.items.int32.gte = 1];
 }
 message CreateVocalPatternResponse {}
 
@@ -92,17 +109,22 @@ message GetSongResponse {
   repeated master.Song song = 1;
 }
 message CreateSongRequest {
-  string name = 1;
-  string kana = 2;
-  master.Artist lyrics = 3;
-  master.Artist music = 4;
-  master.Artist arrangement = 5;
-  string thumbnail = 6;
-  string original_video = 7;
-  google.protobuf.Timestamp release_time = 8;
+  string name = 1 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+  string kana = 2 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+  int32 lyrics_id = 3 [(validate.rules).int32.gte = 1];
+  int32 music_id = 4 [(validate.rules).int32.gte = 1];
+  int32 arrangement_id = 5 [(validate.rules).int32.gte = 1];
+  string thumbnail = 6 [(validate.rules).string.min_len = 1];
+  string original_video = 7 [(validate.rules).string.min_len = 1];
+  google.protobuf.Timestamp release_time = 8 [(validate.rules).timestamp.required = true];
   bool deleted = 9;
-  repeated master.VocalPattern vocal_patterns = 10;
-  repeated enums.MusicVideoType music_video_types = 11;
+  repeated enums.MusicVideoType music_video_types = 10 [(validate.rules).repeated.items.enum.defined_only = true];
 }
 message CreateSongResponse {}
 
@@ -118,10 +140,13 @@ message GetChartResponse {
   repeated master.Chart chart = 1;
 }
 message CreateChartRequest {
-  int32 song_id = 1;
-  enums.DifficultyType difficulty_type = 2;
-  int32 level = 3;
-  string chart_view_link = 4;
+  int32 song_id = 1 [(validate.rules).int32.gte = 1];
+  enums.DifficultyType difficulty_type = 2 [(validate.rules).enum.defined_only = true];
+  int32 level = 3 [(validate.rules).int32 = {
+    gte: 1
+    lt: 100
+  }];
+  string chart_view_link = 4 [(validate.rules).string.min_len = 1];
 }
 message CreateChartResponse {}
 
@@ -139,8 +164,8 @@ service MasterService {
   rpc GetUnit(GetUnitRequest) returns (GetUnitResponse);
   rpc CreateUnit(CreateUnitRequest) returns (CreateUnitResponse);
   // VocalPattern
-  rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
-  rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+  // rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+  // rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
   rpc CreateVocalPattern(CreateVocalPatternRequest) returns (CreateVocalPatternResponse);
   // Song
   rpc GetSongs(GetSongsRequest) returns (GetSongsResponse);

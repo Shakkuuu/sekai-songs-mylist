@@ -14,7 +14,7 @@ type Artist struct {
 
 type Chart struct {
 	ID             int32
-	SongID         int32
+	Song         Song
 	DifficultyType enums.DifficultyType
 	Level          int32
 	ChartViewLink  string
@@ -23,19 +23,22 @@ type Chart struct {
 type Singer struct {
 	ID   int32
 	Name string
+	Position int32
 }
 
 type Song struct {
 	ID            int32
 	Name          string
 	Kana          string
-	LyricsID      int32
-	MusicID       int32
-	ArrangementID int32
+	Lyrics Artist
+	Music Artist
+	Arrangement Artist
 	Thumbnail     string
 	OriginalVideo string
 	ReleaseTime   time.Time
 	Deleted       bool
+	VocalPatterns []*VocalPattern
+	MusicVideoTypes []enums.MusicVideoType
 }
 
 type SongMusicVideoType struct {
@@ -51,8 +54,9 @@ type Unit struct {
 
 type VocalPattern struct {
 	ID     int32
-	SongID int32
 	Name   string
+	Singers []*Singer
+	Units []*Unit
 }
 
 type VocalPatternSinger struct {

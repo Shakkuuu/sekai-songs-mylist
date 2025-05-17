@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateArtistRequest, CreateArtistResponse, GetArtistRequest, GetArtistResponse, GetArtistsRequest, GetArtistsResponse, GetSongRequest, GetSongResponse, GetSongsRequest, GetSongsResponse } from "./master_pb.js";
+import { CreateArtistRequest, CreateArtistResponse, CreateChartRequest, CreateChartResponse, CreateSingerRequest, CreateSingerResponse, CreateSongRequest, CreateSongResponse, CreateUnitRequest, CreateUnitResponse, CreateVocalPatternRequest, CreateVocalPatternResponse, GetArtistRequest, GetArtistResponse, GetArtistsRequest, GetArtistsResponse, GetChartRequest, GetChartResponse, GetChartsRequest, GetChartsResponse, GetSingerRequest, GetSingerResponse, GetSingersRequest, GetSingersResponse, GetSongRequest, GetSongResponse, GetSongsRequest, GetSongsResponse, GetUnitRequest, GetUnitResponse, GetUnitsRequest, GetUnitsResponse } from "./master_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -13,6 +13,8 @@ export const MasterService = {
   typeName: "master.MasterService",
   methods: {
     /**
+     * Artist
+     *
      * @generated from rpc master.MasterService.GetArtists
      */
     getArtists: {
@@ -40,6 +42,79 @@ export const MasterService = {
       kind: MethodKind.Unary,
     },
     /**
+     * Singer
+     *
+     * @generated from rpc master.MasterService.GetSingers
+     */
+    getSingers: {
+      name: "GetSingers",
+      I: GetSingersRequest,
+      O: GetSingersResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.GetSinger
+     */
+    getSinger: {
+      name: "GetSinger",
+      I: GetSingerRequest,
+      O: GetSingerResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.CreateSinger
+     */
+    createSinger: {
+      name: "CreateSinger",
+      I: CreateSingerRequest,
+      O: CreateSingerResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Unit
+     *
+     * @generated from rpc master.MasterService.GetUnits
+     */
+    getUnits: {
+      name: "GetUnits",
+      I: GetUnitsRequest,
+      O: GetUnitsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.GetUnit
+     */
+    getUnit: {
+      name: "GetUnit",
+      I: GetUnitRequest,
+      O: GetUnitResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.CreateUnit
+     */
+    createUnit: {
+      name: "CreateUnit",
+      I: CreateUnitRequest,
+      O: CreateUnitResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * VocalPattern
+     * rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+     * rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+     *
+     * @generated from rpc master.MasterService.CreateVocalPattern
+     */
+    createVocalPattern: {
+      name: "CreateVocalPattern",
+      I: CreateVocalPatternRequest,
+      O: CreateVocalPatternResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Song
+     *
      * @generated from rpc master.MasterService.GetSongs
      */
     getSongs: {
@@ -55,6 +130,44 @@ export const MasterService = {
       name: "GetSong",
       I: GetSongRequest,
       O: GetSongResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.CreateSong
+     */
+    createSong: {
+      name: "CreateSong",
+      I: CreateSongRequest,
+      O: CreateSongResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Chart
+     *
+     * @generated from rpc master.MasterService.GetCharts
+     */
+    getCharts: {
+      name: "GetCharts",
+      I: GetChartsRequest,
+      O: GetChartsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.GetChart
+     */
+    getChart: {
+      name: "GetChart",
+      I: GetChartRequest,
+      O: GetChartResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc master.MasterService.CreateChart
+     */
+    createChart: {
+      name: "CreateChart",
+      I: CreateChartRequest,
+      O: CreateChartResponse,
       kind: MethodKind.Unary,
     },
   }

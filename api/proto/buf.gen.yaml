@@ -15,3 +15,6 @@ plugins:
   - plugin: connect-es
     out: ../../view/src/gen
     opt: target=ts,import_extension=.js
+  - plugin: buf.build/bufbuild/validate-go
+    out: ../../internal/gen
+    opt: paths=source_relative

@@ -19,22 +19,52 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MasterService_GetArtists_FullMethodName   = "/master.MasterService/GetArtists"
-	MasterService_GetArtist_FullMethodName    = "/master.MasterService/GetArtist"
-	MasterService_CreateArtist_FullMethodName = "/master.MasterService/CreateArtist"
-	MasterService_GetSongs_FullMethodName     = "/master.MasterService/GetSongs"
-	MasterService_GetSong_FullMethodName      = "/master.MasterService/GetSong"
+	MasterService_GetArtists_FullMethodName         = "/master.MasterService/GetArtists"
+	MasterService_GetArtist_FullMethodName          = "/master.MasterService/GetArtist"
+	MasterService_CreateArtist_FullMethodName       = "/master.MasterService/CreateArtist"
+	MasterService_GetSingers_FullMethodName         = "/master.MasterService/GetSingers"
+	MasterService_GetSinger_FullMethodName          = "/master.MasterService/GetSinger"
+	MasterService_CreateSinger_FullMethodName       = "/master.MasterService/CreateSinger"
+	MasterService_GetUnits_FullMethodName           = "/master.MasterService/GetUnits"
+	MasterService_GetUnit_FullMethodName            = "/master.MasterService/GetUnit"
+	MasterService_CreateUnit_FullMethodName         = "/master.MasterService/CreateUnit"
+	MasterService_CreateVocalPattern_FullMethodName = "/master.MasterService/CreateVocalPattern"
+	MasterService_GetSongs_FullMethodName           = "/master.MasterService/GetSongs"
+	MasterService_GetSong_FullMethodName            = "/master.MasterService/GetSong"
+	MasterService_CreateSong_FullMethodName         = "/master.MasterService/CreateSong"
+	MasterService_GetCharts_FullMethodName          = "/master.MasterService/GetCharts"
+	MasterService_GetChart_FullMethodName           = "/master.MasterService/GetChart"
+	MasterService_CreateChart_FullMethodName        = "/master.MasterService/CreateChart"
 )
 
 // MasterServiceClient is the client API for MasterService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MasterServiceClient interface {
+	// Artist
 	GetArtists(ctx context.Context, in *GetArtistsRequest, opts ...grpc.CallOption) (*GetArtistsResponse, error)
 	GetArtist(ctx context.Context, in *GetArtistRequest, opts ...grpc.CallOption) (*GetArtistResponse, error)
 	CreateArtist(ctx context.Context, in *CreateArtistRequest, opts ...grpc.CallOption) (*CreateArtistResponse, error)
+	// Singer
+	GetSingers(ctx context.Context, in *GetSingersRequest, opts ...grpc.CallOption) (*GetSingersResponse, error)
+	GetSinger(ctx context.Context, in *GetSingerRequest, opts ...grpc.CallOption) (*GetSingerResponse, error)
+	CreateSinger(ctx context.Context, in *CreateSingerRequest, opts ...grpc.CallOption) (*CreateSingerResponse, error)
+	// Unit
+	GetUnits(ctx context.Context, in *GetUnitsRequest, opts ...grpc.CallOption) (*GetUnitsResponse, error)
+	GetUnit(ctx context.Context, in *GetUnitRequest, opts ...grpc.CallOption) (*GetUnitResponse, error)
+	CreateUnit(ctx context.Context, in *CreateUnitRequest, opts ...grpc.CallOption) (*CreateUnitResponse, error)
+	// VocalPattern
+	// rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+	// rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+	CreateVocalPattern(ctx context.Context, in *CreateVocalPatternRequest, opts ...grpc.CallOption) (*CreateVocalPatternResponse, error)
+	// Song
 	GetSongs(ctx context.Context, in *GetSongsRequest, opts ...grpc.CallOption) (*GetSongsResponse, error)
 	GetSong(ctx context.Context, in *GetSongRequest, opts ...grpc.CallOption) (*GetSongResponse, error)
+	CreateSong(ctx context.Context, in *CreateSongRequest, opts ...grpc.CallOption) (*CreateSongResponse, error)
+	// Chart
+	GetCharts(ctx context.Context, in *GetChartsRequest, opts ...grpc.CallOption) (*GetChartsResponse, error)
+	GetChart(ctx context.Context, in *GetChartRequest, opts ...grpc.CallOption) (*GetChartResponse, error)
+	CreateChart(ctx context.Context, in *CreateChartRequest, opts ...grpc.CallOption) (*CreateChartResponse, error)
 }
 
 type masterServiceClient struct {
@@ -75,6 +105,76 @@ func (c *masterServiceClient) CreateArtist(ctx context.Context, in *CreateArtist
 	return out, nil
 }
 
+func (c *masterServiceClient) GetSingers(ctx context.Context, in *GetSingersRequest, opts ...grpc.CallOption) (*GetSingersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSingersResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetSingers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) GetSinger(ctx context.Context, in *GetSingerRequest, opts ...grpc.CallOption) (*GetSingerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSingerResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetSinger_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) CreateSinger(ctx context.Context, in *CreateSingerRequest, opts ...grpc.CallOption) (*CreateSingerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSingerResponse)
+	err := c.cc.Invoke(ctx, MasterService_CreateSinger_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) GetUnits(ctx context.Context, in *GetUnitsRequest, opts ...grpc.CallOption) (*GetUnitsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUnitsResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetUnits_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) GetUnit(ctx context.Context, in *GetUnitRequest, opts ...grpc.CallOption) (*GetUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUnitResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetUnit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) CreateUnit(ctx context.Context, in *CreateUnitRequest, opts ...grpc.CallOption) (*CreateUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateUnitResponse)
+	err := c.cc.Invoke(ctx, MasterService_CreateUnit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) CreateVocalPattern(ctx context.Context, in *CreateVocalPatternRequest, opts ...grpc.CallOption) (*CreateVocalPatternResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateVocalPatternResponse)
+	err := c.cc.Invoke(ctx, MasterService_CreateVocalPattern_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *masterServiceClient) GetSongs(ctx context.Context, in *GetSongsRequest, opts ...grpc.CallOption) (*GetSongsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetSongsResponse)
@@ -95,15 +195,74 @@ func (c *masterServiceClient) GetSong(ctx context.Context, in *GetSongRequest, o
 	return out, nil
 }
 
+func (c *masterServiceClient) CreateSong(ctx context.Context, in *CreateSongRequest, opts ...grpc.CallOption) (*CreateSongResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSongResponse)
+	err := c.cc.Invoke(ctx, MasterService_CreateSong_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) GetCharts(ctx context.Context, in *GetChartsRequest, opts ...grpc.CallOption) (*GetChartsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetChartsResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetCharts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) GetChart(ctx context.Context, in *GetChartRequest, opts ...grpc.CallOption) (*GetChartResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetChartResponse)
+	err := c.cc.Invoke(ctx, MasterService_GetChart_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *masterServiceClient) CreateChart(ctx context.Context, in *CreateChartRequest, opts ...grpc.CallOption) (*CreateChartResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateChartResponse)
+	err := c.cc.Invoke(ctx, MasterService_CreateChart_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MasterServiceServer is the server API for MasterService service.
 // All implementations must embed UnimplementedMasterServiceServer
 // for forward compatibility.
 type MasterServiceServer interface {
+	// Artist
 	GetArtists(context.Context, *GetArtistsRequest) (*GetArtistsResponse, error)
 	GetArtist(context.Context, *GetArtistRequest) (*GetArtistResponse, error)
 	CreateArtist(context.Context, *CreateArtistRequest) (*CreateArtistResponse, error)
+	// Singer
+	GetSingers(context.Context, *GetSingersRequest) (*GetSingersResponse, error)
+	GetSinger(context.Context, *GetSingerRequest) (*GetSingerResponse, error)
+	CreateSinger(context.Context, *CreateSingerRequest) (*CreateSingerResponse, error)
+	// Unit
+	GetUnits(context.Context, *GetUnitsRequest) (*GetUnitsResponse, error)
+	GetUnit(context.Context, *GetUnitRequest) (*GetUnitResponse, error)
+	CreateUnit(context.Context, *CreateUnitRequest) (*CreateUnitResponse, error)
+	// VocalPattern
+	// rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+	// rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+	CreateVocalPattern(context.Context, *CreateVocalPatternRequest) (*CreateVocalPatternResponse, error)
+	// Song
 	GetSongs(context.Context, *GetSongsRequest) (*GetSongsResponse, error)
 	GetSong(context.Context, *GetSongRequest) (*GetSongResponse, error)
+	CreateSong(context.Context, *CreateSongRequest) (*CreateSongResponse, error)
+	// Chart
+	GetCharts(context.Context, *GetChartsRequest) (*GetChartsResponse, error)
+	GetChart(context.Context, *GetChartRequest) (*GetChartResponse, error)
+	CreateChart(context.Context, *CreateChartRequest) (*CreateChartResponse, error)
 	mustEmbedUnimplementedMasterServiceServer()
 }
 
@@ -123,11 +282,44 @@ func (UnimplementedMasterServiceServer) GetArtist(context.Context, *GetArtistReq
 func (UnimplementedMasterServiceServer) CreateArtist(context.Context, *CreateArtistRequest) (*CreateArtistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateArtist not implemented")
 }
+func (UnimplementedMasterServiceServer) GetSingers(context.Context, *GetSingersRequest) (*GetSingersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSingers not implemented")
+}
+func (UnimplementedMasterServiceServer) GetSinger(context.Context, *GetSingerRequest) (*GetSingerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSinger not implemented")
+}
+func (UnimplementedMasterServiceServer) CreateSinger(context.Context, *CreateSingerRequest) (*CreateSingerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSinger not implemented")
+}
+func (UnimplementedMasterServiceServer) GetUnits(context.Context, *GetUnitsRequest) (*GetUnitsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUnits not implemented")
+}
+func (UnimplementedMasterServiceServer) GetUnit(context.Context, *GetUnitRequest) (*GetUnitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUnit not implemented")
+}
+func (UnimplementedMasterServiceServer) CreateUnit(context.Context, *CreateUnitRequest) (*CreateUnitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUnit not implemented")
+}
+func (UnimplementedMasterServiceServer) CreateVocalPattern(context.Context, *CreateVocalPatternRequest) (*CreateVocalPatternResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateVocalPattern not implemented")
+}
 func (UnimplementedMasterServiceServer) GetSongs(context.Context, *GetSongsRequest) (*GetSongsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSongs not implemented")
 }
 func (UnimplementedMasterServiceServer) GetSong(context.Context, *GetSongRequest) (*GetSongResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSong not implemented")
+}
+func (UnimplementedMasterServiceServer) CreateSong(context.Context, *CreateSongRequest) (*CreateSongResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSong not implemented")
+}
+func (UnimplementedMasterServiceServer) GetCharts(context.Context, *GetChartsRequest) (*GetChartsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCharts not implemented")
+}
+func (UnimplementedMasterServiceServer) GetChart(context.Context, *GetChartRequest) (*GetChartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChart not implemented")
+}
+func (UnimplementedMasterServiceServer) CreateChart(context.Context, *CreateChartRequest) (*CreateChartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateChart not implemented")
 }
 func (UnimplementedMasterServiceServer) mustEmbedUnimplementedMasterServiceServer() {}
 func (UnimplementedMasterServiceServer) testEmbeddedByValue()                       {}
@@ -204,6 +396,132 @@ func _MasterService_CreateArtist_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MasterService_GetSingers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSingersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetSingers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetSingers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetSingers(ctx, req.(*GetSingersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_GetSinger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSingerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetSinger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetSinger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetSinger(ctx, req.(*GetSingerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_CreateSinger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSingerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).CreateSinger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_CreateSinger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).CreateSinger(ctx, req.(*CreateSingerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_GetUnits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUnitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetUnits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetUnits_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetUnits(ctx, req.(*GetUnitsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_GetUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUnitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetUnit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetUnit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetUnit(ctx, req.(*GetUnitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_CreateUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUnitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).CreateUnit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_CreateUnit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).CreateUnit(ctx, req.(*CreateUnitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_CreateVocalPattern_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateVocalPatternRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).CreateVocalPattern(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_CreateVocalPattern_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).CreateVocalPattern(ctx, req.(*CreateVocalPatternRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MasterService_GetSongs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSongsRequest)
 	if err := dec(in); err != nil {
@@ -240,6 +558,78 @@ func _MasterService_GetSong_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MasterService_CreateSong_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSongRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).CreateSong(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_CreateSong_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).CreateSong(ctx, req.(*CreateSongRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_GetCharts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChartsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetCharts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetCharts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetCharts(ctx, req.(*GetChartsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_GetChart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChartRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).GetChart(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_GetChart_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).GetChart(ctx, req.(*GetChartRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MasterService_CreateChart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateChartRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MasterServiceServer).CreateChart(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MasterService_CreateChart_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MasterServiceServer).CreateChart(ctx, req.(*CreateChartRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MasterService_ServiceDesc is the grpc.ServiceDesc for MasterService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -260,12 +650,56 @@ var MasterService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MasterService_CreateArtist_Handler,
 		},
 		{
+			MethodName: "GetSingers",
+			Handler:    _MasterService_GetSingers_Handler,
+		},
+		{
+			MethodName: "GetSinger",
+			Handler:    _MasterService_GetSinger_Handler,
+		},
+		{
+			MethodName: "CreateSinger",
+			Handler:    _MasterService_CreateSinger_Handler,
+		},
+		{
+			MethodName: "GetUnits",
+			Handler:    _MasterService_GetUnits_Handler,
+		},
+		{
+			MethodName: "GetUnit",
+			Handler:    _MasterService_GetUnit_Handler,
+		},
+		{
+			MethodName: "CreateUnit",
+			Handler:    _MasterService_CreateUnit_Handler,
+		},
+		{
+			MethodName: "CreateVocalPattern",
+			Handler:    _MasterService_CreateVocalPattern_Handler,
+		},
+		{
 			MethodName: "GetSongs",
 			Handler:    _MasterService_GetSongs_Handler,
 		},
 		{
 			MethodName: "GetSong",
 			Handler:    _MasterService_GetSong_Handler,
+		},
+		{
+			MethodName: "CreateSong",
+			Handler:    _MasterService_CreateSong_Handler,
+		},
+		{
+			MethodName: "GetCharts",
+			Handler:    _MasterService_GetCharts_Handler,
+		},
+		{
+			MethodName: "GetChart",
+			Handler:    _MasterService_GetChart_Handler,
+		},
+		{
+			MethodName: "CreateChart",
+			Handler:    _MasterService_CreateChart_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -41,19 +41,66 @@ const (
 	// MasterServiceCreateArtistProcedure is the fully-qualified name of the MasterService's
 	// CreateArtist RPC.
 	MasterServiceCreateArtistProcedure = "/master.MasterService/CreateArtist"
+	// MasterServiceGetSingersProcedure is the fully-qualified name of the MasterService's GetSingers
+	// RPC.
+	MasterServiceGetSingersProcedure = "/master.MasterService/GetSingers"
+	// MasterServiceGetSingerProcedure is the fully-qualified name of the MasterService's GetSinger RPC.
+	MasterServiceGetSingerProcedure = "/master.MasterService/GetSinger"
+	// MasterServiceCreateSingerProcedure is the fully-qualified name of the MasterService's
+	// CreateSinger RPC.
+	MasterServiceCreateSingerProcedure = "/master.MasterService/CreateSinger"
+	// MasterServiceGetUnitsProcedure is the fully-qualified name of the MasterService's GetUnits RPC.
+	MasterServiceGetUnitsProcedure = "/master.MasterService/GetUnits"
+	// MasterServiceGetUnitProcedure is the fully-qualified name of the MasterService's GetUnit RPC.
+	MasterServiceGetUnitProcedure = "/master.MasterService/GetUnit"
+	// MasterServiceCreateUnitProcedure is the fully-qualified name of the MasterService's CreateUnit
+	// RPC.
+	MasterServiceCreateUnitProcedure = "/master.MasterService/CreateUnit"
+	// MasterServiceCreateVocalPatternProcedure is the fully-qualified name of the MasterService's
+	// CreateVocalPattern RPC.
+	MasterServiceCreateVocalPatternProcedure = "/master.MasterService/CreateVocalPattern"
 	// MasterServiceGetSongsProcedure is the fully-qualified name of the MasterService's GetSongs RPC.
 	MasterServiceGetSongsProcedure = "/master.MasterService/GetSongs"
 	// MasterServiceGetSongProcedure is the fully-qualified name of the MasterService's GetSong RPC.
 	MasterServiceGetSongProcedure = "/master.MasterService/GetSong"
+	// MasterServiceCreateSongProcedure is the fully-qualified name of the MasterService's CreateSong
+	// RPC.
+	MasterServiceCreateSongProcedure = "/master.MasterService/CreateSong"
+	// MasterServiceGetChartsProcedure is the fully-qualified name of the MasterService's GetCharts RPC.
+	MasterServiceGetChartsProcedure = "/master.MasterService/GetCharts"
+	// MasterServiceGetChartProcedure is the fully-qualified name of the MasterService's GetChart RPC.
+	MasterServiceGetChartProcedure = "/master.MasterService/GetChart"
+	// MasterServiceCreateChartProcedure is the fully-qualified name of the MasterService's CreateChart
+	// RPC.
+	MasterServiceCreateChartProcedure = "/master.MasterService/CreateChart"
 )
 
 // MasterServiceClient is a client for the master.MasterService service.
 type MasterServiceClient interface {
+	// Artist
 	GetArtists(context.Context, *connect.Request[master.GetArtistsRequest]) (*connect.Response[master.GetArtistsResponse], error)
 	GetArtist(context.Context, *connect.Request[master.GetArtistRequest]) (*connect.Response[master.GetArtistResponse], error)
 	CreateArtist(context.Context, *connect.Request[master.CreateArtistRequest]) (*connect.Response[master.CreateArtistResponse], error)
+	// Singer
+	GetSingers(context.Context, *connect.Request[master.GetSingersRequest]) (*connect.Response[master.GetSingersResponse], error)
+	GetSinger(context.Context, *connect.Request[master.GetSingerRequest]) (*connect.Response[master.GetSingerResponse], error)
+	CreateSinger(context.Context, *connect.Request[master.CreateSingerRequest]) (*connect.Response[master.CreateSingerResponse], error)
+	// Unit
+	GetUnits(context.Context, *connect.Request[master.GetUnitsRequest]) (*connect.Response[master.GetUnitsResponse], error)
+	GetUnit(context.Context, *connect.Request[master.GetUnitRequest]) (*connect.Response[master.GetUnitResponse], error)
+	CreateUnit(context.Context, *connect.Request[master.CreateUnitRequest]) (*connect.Response[master.CreateUnitResponse], error)
+	// VocalPattern
+	// rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+	// rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+	CreateVocalPattern(context.Context, *connect.Request[master.CreateVocalPatternRequest]) (*connect.Response[master.CreateVocalPatternResponse], error)
+	// Song
 	GetSongs(context.Context, *connect.Request[master.GetSongsRequest]) (*connect.Response[master.GetSongsResponse], error)
 	GetSong(context.Context, *connect.Request[master.GetSongRequest]) (*connect.Response[master.GetSongResponse], error)
+	CreateSong(context.Context, *connect.Request[master.CreateSongRequest]) (*connect.Response[master.CreateSongResponse], error)
+	// Chart
+	GetCharts(context.Context, *connect.Request[master.GetChartsRequest]) (*connect.Response[master.GetChartsResponse], error)
+	GetChart(context.Context, *connect.Request[master.GetChartRequest]) (*connect.Response[master.GetChartResponse], error)
+	CreateChart(context.Context, *connect.Request[master.CreateChartRequest]) (*connect.Response[master.CreateChartResponse], error)
 }
 
 // NewMasterServiceClient constructs a client for the master.MasterService service. By default, it
@@ -85,6 +132,48 @@ func NewMasterServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(masterServiceMethods.ByName("CreateArtist")),
 			connect.WithClientOptions(opts...),
 		),
+		getSingers: connect.NewClient[master.GetSingersRequest, master.GetSingersResponse](
+			httpClient,
+			baseURL+MasterServiceGetSingersProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetSingers")),
+			connect.WithClientOptions(opts...),
+		),
+		getSinger: connect.NewClient[master.GetSingerRequest, master.GetSingerResponse](
+			httpClient,
+			baseURL+MasterServiceGetSingerProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetSinger")),
+			connect.WithClientOptions(opts...),
+		),
+		createSinger: connect.NewClient[master.CreateSingerRequest, master.CreateSingerResponse](
+			httpClient,
+			baseURL+MasterServiceCreateSingerProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("CreateSinger")),
+			connect.WithClientOptions(opts...),
+		),
+		getUnits: connect.NewClient[master.GetUnitsRequest, master.GetUnitsResponse](
+			httpClient,
+			baseURL+MasterServiceGetUnitsProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetUnits")),
+			connect.WithClientOptions(opts...),
+		),
+		getUnit: connect.NewClient[master.GetUnitRequest, master.GetUnitResponse](
+			httpClient,
+			baseURL+MasterServiceGetUnitProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetUnit")),
+			connect.WithClientOptions(opts...),
+		),
+		createUnit: connect.NewClient[master.CreateUnitRequest, master.CreateUnitResponse](
+			httpClient,
+			baseURL+MasterServiceCreateUnitProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("CreateUnit")),
+			connect.WithClientOptions(opts...),
+		),
+		createVocalPattern: connect.NewClient[master.CreateVocalPatternRequest, master.CreateVocalPatternResponse](
+			httpClient,
+			baseURL+MasterServiceCreateVocalPatternProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("CreateVocalPattern")),
+			connect.WithClientOptions(opts...),
+		),
 		getSongs: connect.NewClient[master.GetSongsRequest, master.GetSongsResponse](
 			httpClient,
 			baseURL+MasterServiceGetSongsProcedure,
@@ -97,16 +186,51 @@ func NewMasterServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(masterServiceMethods.ByName("GetSong")),
 			connect.WithClientOptions(opts...),
 		),
+		createSong: connect.NewClient[master.CreateSongRequest, master.CreateSongResponse](
+			httpClient,
+			baseURL+MasterServiceCreateSongProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("CreateSong")),
+			connect.WithClientOptions(opts...),
+		),
+		getCharts: connect.NewClient[master.GetChartsRequest, master.GetChartsResponse](
+			httpClient,
+			baseURL+MasterServiceGetChartsProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetCharts")),
+			connect.WithClientOptions(opts...),
+		),
+		getChart: connect.NewClient[master.GetChartRequest, master.GetChartResponse](
+			httpClient,
+			baseURL+MasterServiceGetChartProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("GetChart")),
+			connect.WithClientOptions(opts...),
+		),
+		createChart: connect.NewClient[master.CreateChartRequest, master.CreateChartResponse](
+			httpClient,
+			baseURL+MasterServiceCreateChartProcedure,
+			connect.WithSchema(masterServiceMethods.ByName("CreateChart")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // masterServiceClient implements MasterServiceClient.
 type masterServiceClient struct {
-	getArtists   *connect.Client[master.GetArtistsRequest, master.GetArtistsResponse]
-	getArtist    *connect.Client[master.GetArtistRequest, master.GetArtistResponse]
-	createArtist *connect.Client[master.CreateArtistRequest, master.CreateArtistResponse]
-	getSongs     *connect.Client[master.GetSongsRequest, master.GetSongsResponse]
-	getSong      *connect.Client[master.GetSongRequest, master.GetSongResponse]
+	getArtists         *connect.Client[master.GetArtistsRequest, master.GetArtistsResponse]
+	getArtist          *connect.Client[master.GetArtistRequest, master.GetArtistResponse]
+	createArtist       *connect.Client[master.CreateArtistRequest, master.CreateArtistResponse]
+	getSingers         *connect.Client[master.GetSingersRequest, master.GetSingersResponse]
+	getSinger          *connect.Client[master.GetSingerRequest, master.GetSingerResponse]
+	createSinger       *connect.Client[master.CreateSingerRequest, master.CreateSingerResponse]
+	getUnits           *connect.Client[master.GetUnitsRequest, master.GetUnitsResponse]
+	getUnit            *connect.Client[master.GetUnitRequest, master.GetUnitResponse]
+	createUnit         *connect.Client[master.CreateUnitRequest, master.CreateUnitResponse]
+	createVocalPattern *connect.Client[master.CreateVocalPatternRequest, master.CreateVocalPatternResponse]
+	getSongs           *connect.Client[master.GetSongsRequest, master.GetSongsResponse]
+	getSong            *connect.Client[master.GetSongRequest, master.GetSongResponse]
+	createSong         *connect.Client[master.CreateSongRequest, master.CreateSongResponse]
+	getCharts          *connect.Client[master.GetChartsRequest, master.GetChartsResponse]
+	getChart           *connect.Client[master.GetChartRequest, master.GetChartResponse]
+	createChart        *connect.Client[master.CreateChartRequest, master.CreateChartResponse]
 }
 
 // GetArtists calls master.MasterService.GetArtists.
@@ -124,6 +248,41 @@ func (c *masterServiceClient) CreateArtist(ctx context.Context, req *connect.Req
 	return c.createArtist.CallUnary(ctx, req)
 }
 
+// GetSingers calls master.MasterService.GetSingers.
+func (c *masterServiceClient) GetSingers(ctx context.Context, req *connect.Request[master.GetSingersRequest]) (*connect.Response[master.GetSingersResponse], error) {
+	return c.getSingers.CallUnary(ctx, req)
+}
+
+// GetSinger calls master.MasterService.GetSinger.
+func (c *masterServiceClient) GetSinger(ctx context.Context, req *connect.Request[master.GetSingerRequest]) (*connect.Response[master.GetSingerResponse], error) {
+	return c.getSinger.CallUnary(ctx, req)
+}
+
+// CreateSinger calls master.MasterService.CreateSinger.
+func (c *masterServiceClient) CreateSinger(ctx context.Context, req *connect.Request[master.CreateSingerRequest]) (*connect.Response[master.CreateSingerResponse], error) {
+	return c.createSinger.CallUnary(ctx, req)
+}
+
+// GetUnits calls master.MasterService.GetUnits.
+func (c *masterServiceClient) GetUnits(ctx context.Context, req *connect.Request[master.GetUnitsRequest]) (*connect.Response[master.GetUnitsResponse], error) {
+	return c.getUnits.CallUnary(ctx, req)
+}
+
+// GetUnit calls master.MasterService.GetUnit.
+func (c *masterServiceClient) GetUnit(ctx context.Context, req *connect.Request[master.GetUnitRequest]) (*connect.Response[master.GetUnitResponse], error) {
+	return c.getUnit.CallUnary(ctx, req)
+}
+
+// CreateUnit calls master.MasterService.CreateUnit.
+func (c *masterServiceClient) CreateUnit(ctx context.Context, req *connect.Request[master.CreateUnitRequest]) (*connect.Response[master.CreateUnitResponse], error) {
+	return c.createUnit.CallUnary(ctx, req)
+}
+
+// CreateVocalPattern calls master.MasterService.CreateVocalPattern.
+func (c *masterServiceClient) CreateVocalPattern(ctx context.Context, req *connect.Request[master.CreateVocalPatternRequest]) (*connect.Response[master.CreateVocalPatternResponse], error) {
+	return c.createVocalPattern.CallUnary(ctx, req)
+}
+
 // GetSongs calls master.MasterService.GetSongs.
 func (c *masterServiceClient) GetSongs(ctx context.Context, req *connect.Request[master.GetSongsRequest]) (*connect.Response[master.GetSongsResponse], error) {
 	return c.getSongs.CallUnary(ctx, req)
@@ -134,13 +293,52 @@ func (c *masterServiceClient) GetSong(ctx context.Context, req *connect.Request[
 	return c.getSong.CallUnary(ctx, req)
 }
 
+// CreateSong calls master.MasterService.CreateSong.
+func (c *masterServiceClient) CreateSong(ctx context.Context, req *connect.Request[master.CreateSongRequest]) (*connect.Response[master.CreateSongResponse], error) {
+	return c.createSong.CallUnary(ctx, req)
+}
+
+// GetCharts calls master.MasterService.GetCharts.
+func (c *masterServiceClient) GetCharts(ctx context.Context, req *connect.Request[master.GetChartsRequest]) (*connect.Response[master.GetChartsResponse], error) {
+	return c.getCharts.CallUnary(ctx, req)
+}
+
+// GetChart calls master.MasterService.GetChart.
+func (c *masterServiceClient) GetChart(ctx context.Context, req *connect.Request[master.GetChartRequest]) (*connect.Response[master.GetChartResponse], error) {
+	return c.getChart.CallUnary(ctx, req)
+}
+
+// CreateChart calls master.MasterService.CreateChart.
+func (c *masterServiceClient) CreateChart(ctx context.Context, req *connect.Request[master.CreateChartRequest]) (*connect.Response[master.CreateChartResponse], error) {
+	return c.createChart.CallUnary(ctx, req)
+}
+
 // MasterServiceHandler is an implementation of the master.MasterService service.
 type MasterServiceHandler interface {
+	// Artist
 	GetArtists(context.Context, *connect.Request[master.GetArtistsRequest]) (*connect.Response[master.GetArtistsResponse], error)
 	GetArtist(context.Context, *connect.Request[master.GetArtistRequest]) (*connect.Response[master.GetArtistResponse], error)
 	CreateArtist(context.Context, *connect.Request[master.CreateArtistRequest]) (*connect.Response[master.CreateArtistResponse], error)
+	// Singer
+	GetSingers(context.Context, *connect.Request[master.GetSingersRequest]) (*connect.Response[master.GetSingersResponse], error)
+	GetSinger(context.Context, *connect.Request[master.GetSingerRequest]) (*connect.Response[master.GetSingerResponse], error)
+	CreateSinger(context.Context, *connect.Request[master.CreateSingerRequest]) (*connect.Response[master.CreateSingerResponse], error)
+	// Unit
+	GetUnits(context.Context, *connect.Request[master.GetUnitsRequest]) (*connect.Response[master.GetUnitsResponse], error)
+	GetUnit(context.Context, *connect.Request[master.GetUnitRequest]) (*connect.Response[master.GetUnitResponse], error)
+	CreateUnit(context.Context, *connect.Request[master.CreateUnitRequest]) (*connect.Response[master.CreateUnitResponse], error)
+	// VocalPattern
+	// rpc GetVocalPatterns(GetVocalPatternsRequest) returns (GetVocalPatternsResponse);
+	// rpc GetVocalPattern(GetVocalPatternRequest) returns (GetVocalPatternResponse);
+	CreateVocalPattern(context.Context, *connect.Request[master.CreateVocalPatternRequest]) (*connect.Response[master.CreateVocalPatternResponse], error)
+	// Song
 	GetSongs(context.Context, *connect.Request[master.GetSongsRequest]) (*connect.Response[master.GetSongsResponse], error)
 	GetSong(context.Context, *connect.Request[master.GetSongRequest]) (*connect.Response[master.GetSongResponse], error)
+	CreateSong(context.Context, *connect.Request[master.CreateSongRequest]) (*connect.Response[master.CreateSongResponse], error)
+	// Chart
+	GetCharts(context.Context, *connect.Request[master.GetChartsRequest]) (*connect.Response[master.GetChartsResponse], error)
+	GetChart(context.Context, *connect.Request[master.GetChartRequest]) (*connect.Response[master.GetChartResponse], error)
+	CreateChart(context.Context, *connect.Request[master.CreateChartRequest]) (*connect.Response[master.CreateChartResponse], error)
 }
 
 // NewMasterServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -168,6 +366,48 @@ func NewMasterServiceHandler(svc MasterServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(masterServiceMethods.ByName("CreateArtist")),
 		connect.WithHandlerOptions(opts...),
 	)
+	masterServiceGetSingersHandler := connect.NewUnaryHandler(
+		MasterServiceGetSingersProcedure,
+		svc.GetSingers,
+		connect.WithSchema(masterServiceMethods.ByName("GetSingers")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceGetSingerHandler := connect.NewUnaryHandler(
+		MasterServiceGetSingerProcedure,
+		svc.GetSinger,
+		connect.WithSchema(masterServiceMethods.ByName("GetSinger")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceCreateSingerHandler := connect.NewUnaryHandler(
+		MasterServiceCreateSingerProcedure,
+		svc.CreateSinger,
+		connect.WithSchema(masterServiceMethods.ByName("CreateSinger")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceGetUnitsHandler := connect.NewUnaryHandler(
+		MasterServiceGetUnitsProcedure,
+		svc.GetUnits,
+		connect.WithSchema(masterServiceMethods.ByName("GetUnits")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceGetUnitHandler := connect.NewUnaryHandler(
+		MasterServiceGetUnitProcedure,
+		svc.GetUnit,
+		connect.WithSchema(masterServiceMethods.ByName("GetUnit")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceCreateUnitHandler := connect.NewUnaryHandler(
+		MasterServiceCreateUnitProcedure,
+		svc.CreateUnit,
+		connect.WithSchema(masterServiceMethods.ByName("CreateUnit")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceCreateVocalPatternHandler := connect.NewUnaryHandler(
+		MasterServiceCreateVocalPatternProcedure,
+		svc.CreateVocalPattern,
+		connect.WithSchema(masterServiceMethods.ByName("CreateVocalPattern")),
+		connect.WithHandlerOptions(opts...),
+	)
 	masterServiceGetSongsHandler := connect.NewUnaryHandler(
 		MasterServiceGetSongsProcedure,
 		svc.GetSongs,
@@ -180,6 +420,30 @@ func NewMasterServiceHandler(svc MasterServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(masterServiceMethods.ByName("GetSong")),
 		connect.WithHandlerOptions(opts...),
 	)
+	masterServiceCreateSongHandler := connect.NewUnaryHandler(
+		MasterServiceCreateSongProcedure,
+		svc.CreateSong,
+		connect.WithSchema(masterServiceMethods.ByName("CreateSong")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceGetChartsHandler := connect.NewUnaryHandler(
+		MasterServiceGetChartsProcedure,
+		svc.GetCharts,
+		connect.WithSchema(masterServiceMethods.ByName("GetCharts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceGetChartHandler := connect.NewUnaryHandler(
+		MasterServiceGetChartProcedure,
+		svc.GetChart,
+		connect.WithSchema(masterServiceMethods.ByName("GetChart")),
+		connect.WithHandlerOptions(opts...),
+	)
+	masterServiceCreateChartHandler := connect.NewUnaryHandler(
+		MasterServiceCreateChartProcedure,
+		svc.CreateChart,
+		connect.WithSchema(masterServiceMethods.ByName("CreateChart")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/master.MasterService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MasterServiceGetArtistsProcedure:
@@ -188,10 +452,32 @@ func NewMasterServiceHandler(svc MasterServiceHandler, opts ...connect.HandlerOp
 			masterServiceGetArtistHandler.ServeHTTP(w, r)
 		case MasterServiceCreateArtistProcedure:
 			masterServiceCreateArtistHandler.ServeHTTP(w, r)
+		case MasterServiceGetSingersProcedure:
+			masterServiceGetSingersHandler.ServeHTTP(w, r)
+		case MasterServiceGetSingerProcedure:
+			masterServiceGetSingerHandler.ServeHTTP(w, r)
+		case MasterServiceCreateSingerProcedure:
+			masterServiceCreateSingerHandler.ServeHTTP(w, r)
+		case MasterServiceGetUnitsProcedure:
+			masterServiceGetUnitsHandler.ServeHTTP(w, r)
+		case MasterServiceGetUnitProcedure:
+			masterServiceGetUnitHandler.ServeHTTP(w, r)
+		case MasterServiceCreateUnitProcedure:
+			masterServiceCreateUnitHandler.ServeHTTP(w, r)
+		case MasterServiceCreateVocalPatternProcedure:
+			masterServiceCreateVocalPatternHandler.ServeHTTP(w, r)
 		case MasterServiceGetSongsProcedure:
 			masterServiceGetSongsHandler.ServeHTTP(w, r)
 		case MasterServiceGetSongProcedure:
 			masterServiceGetSongHandler.ServeHTTP(w, r)
+		case MasterServiceCreateSongProcedure:
+			masterServiceCreateSongHandler.ServeHTTP(w, r)
+		case MasterServiceGetChartsProcedure:
+			masterServiceGetChartsHandler.ServeHTTP(w, r)
+		case MasterServiceGetChartProcedure:
+			masterServiceGetChartHandler.ServeHTTP(w, r)
+		case MasterServiceCreateChartProcedure:
+			masterServiceCreateChartHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -213,10 +499,54 @@ func (UnimplementedMasterServiceHandler) CreateArtist(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateArtist is not implemented"))
 }
 
+func (UnimplementedMasterServiceHandler) GetSingers(context.Context, *connect.Request[master.GetSingersRequest]) (*connect.Response[master.GetSingersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetSingers is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) GetSinger(context.Context, *connect.Request[master.GetSingerRequest]) (*connect.Response[master.GetSingerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetSinger is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) CreateSinger(context.Context, *connect.Request[master.CreateSingerRequest]) (*connect.Response[master.CreateSingerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateSinger is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) GetUnits(context.Context, *connect.Request[master.GetUnitsRequest]) (*connect.Response[master.GetUnitsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetUnits is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) GetUnit(context.Context, *connect.Request[master.GetUnitRequest]) (*connect.Response[master.GetUnitResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetUnit is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) CreateUnit(context.Context, *connect.Request[master.CreateUnitRequest]) (*connect.Response[master.CreateUnitResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateUnit is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) CreateVocalPattern(context.Context, *connect.Request[master.CreateVocalPatternRequest]) (*connect.Response[master.CreateVocalPatternResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateVocalPattern is not implemented"))
+}
+
 func (UnimplementedMasterServiceHandler) GetSongs(context.Context, *connect.Request[master.GetSongsRequest]) (*connect.Response[master.GetSongsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetSongs is not implemented"))
 }
 
 func (UnimplementedMasterServiceHandler) GetSong(context.Context, *connect.Request[master.GetSongRequest]) (*connect.Response[master.GetSongResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetSong is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) CreateSong(context.Context, *connect.Request[master.CreateSongRequest]) (*connect.Response[master.CreateSongResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateSong is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) GetCharts(context.Context, *connect.Request[master.GetChartsRequest]) (*connect.Response[master.GetChartsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetCharts is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) GetChart(context.Context, *connect.Request[master.GetChartRequest]) (*connect.Response[master.GetChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.GetChart is not implemented"))
+}
+
+func (UnimplementedMasterServiceHandler) CreateChart(context.Context, *connect.Request[master.CreateChartRequest]) (*connect.Response[master.CreateChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("master.MasterService.CreateChart is not implemented"))
 }

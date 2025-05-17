@@ -1,3 +1,4 @@
--- name: InsertVocalPatternSingers :exec
+-- name: InsertVocalPatternSinger :one
 INSERT INTO vocal_pattern_singers (vocal_pattern_id, singer_id, position)
-VALUES ($1, $2, $3);
+VALUES ($1, $2, $3)
+RETURNING *;

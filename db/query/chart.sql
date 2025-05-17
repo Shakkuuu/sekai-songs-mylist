@@ -106,6 +106,12 @@ LEFT JOIN units u ON vpu.unit_id = u.id
 LEFT JOIN song_music_video_types smvt ON smvt.song_id = s.id
 ORDER BY c.id;
 
--- name: InsertChart :exec
+-- name: InsertChart :one
 INSERT INTO charts (song_id, difficulty_type, level, chart_view_link)
-VALUES ($1, $2, $3, $4);
+VALUES ($1, $2, $3, $4)
+RETURNING *;
+
+-- name: ExistsChart :one
+SELECT EXISTS (
+  SELECT 1 FROM charts WHERE id = $1
+) AS exists;
