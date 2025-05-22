@@ -7,9 +7,17 @@
 - マスター管理画面整備、選択式とか ok
 - enumは選択式にしたが、singerやartistもlistを取得してそれを選択肢にしたい ok
 - singerのpositionによるsortがうまくいかない ok
+- 検索機能
+  - フロントの検索だけで良さそう？
+- tokenでやりとりしているから、logoutはフロントだけでいいかも
+- changeEmail,changePasswordした後はログアウトさせたいね
+
+- 生成したコードをそのままリモートに上げてるけど、ちゃんとどのローカルでも生成できるようにした方が良さそうだよナー
 
 - export PATH="$(pwd)/../../view/node_modules/.bin:$PATH"
 - buf generate
 - sqlc generate
 - 既存のデータ抽出
   - pg_dump -U db_user_name -h localhost -p 5432 -d dbname -Fp --data-only > dbdb.sql
+
+多分実装ok 動作確認したい。

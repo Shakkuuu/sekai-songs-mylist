@@ -1,31 +1,41 @@
-import { ArtistList } from "./components/ListArtist";
-import { CreateArtist } from "./components/CreateArtist";
-import { SingerList } from "./components/ListSinger";
-import { CreateSinger } from "./components/CreateSinger";
-import { UnitList } from "./components/ListUnit";
-import { CreateUnit } from "./components/CreateUnit";
-import { SongList } from "./components/ListSong";
-import { CreateSong } from "./components/CreateSong";
-import { CreateVocalPattern } from "./components/CreateVocalPattern";
-import { ChartList } from "./components/ListChart";
-import { CreateChart } from "./components/CreateChart";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { MasterPage } from "./pages/MasterPage";
+import { SignupPage } from "./pages/SignupPage";
+import { LoginPage } from "./pages/LoginPage";
+import { TopPage } from "./pages/TopPage";
+import { UserPage } from "./pages/UserPage";
 
 export const App = () => {
   return (
-    <div>
-      <h1>Sekai Songs Mylist</h1>
-      <ArtistList />
-      <CreateArtist />
-      <SingerList />
-      <CreateSinger />
-      <UnitList />
-      <CreateUnit />
-      <CreateVocalPattern />
-      <SongList />
-      <CreateSong />
-      <ChartList />
-      <CreateChart />
-    </div>
+    <Router>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/master">master</Link>
+          </li>
+          <li>
+            <Link to="/signup">signup</Link>
+          </li>
+          <li>
+            <Link to="/login">login</Link>
+          </li>
+          <li>
+            <Link to="/user">user</Link>
+          </li>
+          <li>
+            <Link to="/">top</Link>
+          </li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<TopPage />} />
+        <Route path="/master" element={<MasterPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/user" element={<UserPage />} />
+        {/* <Route path="*" element={<div>Not Found</div>} /> */}
+      </Routes>
+    </Router>
   );
 };
 

@@ -6,6 +6,8 @@ package sqlcgen
 
 import (
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Artist struct {
@@ -49,6 +51,15 @@ type SongMusicVideoType struct {
 type Unit struct {
 	ID   int32
 	Name string
+}
+
+type User struct {
+	ID        uuid.UUID
+	Email     string
+	Password  string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
 }
 
 type VocalPattern struct {

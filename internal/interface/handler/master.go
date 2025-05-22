@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"sort"
 
 	"connectrpc.com/connect"
@@ -28,6 +28,7 @@ func NewMasterHandler(masterUsecase usecase.MasterUsecase) *MasterHandler {
 func (h *MasterHandler) GetArtists(ctx context.Context, req *connect.Request[proto_master.GetArtistsRequest]) (*connect.Response[proto_master.GetArtistsResponse], error) {
 	artists, err := h.masterUsecase.ListArtists(ctx)
 	if err != nil {
+		log.Println(errors.GetReportableStackTrace(err))
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
 
@@ -214,16 +215,16 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 			if vp == nil {
 				continue
 			}
-			fmt.Println(vp.Name)
-			for _, v := range vp.Singers {
-				fmt.Println(*v)
-			}
+			// fmt.Println(vp.Name)
+			// for _, v := range vp.Singers {
+			// 	fmt.Println(*v)
+			// }
 			sort.Slice(vp.Singers, func(i, j int) bool {
 				return vp.Singers[i].Position < vp.Singers[j].Position
 			})
-			for _, v := range vp.Singers {
-				fmt.Println(*v)
-			}
+			// for _, v := range vp.Singers {
+			// 	fmt.Println(*v)
+			// }
 			var protoSingers []*proto_master.Singer
 			for _, s := range vp.Singers {
 				if s == nil {

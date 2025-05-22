@@ -12,7 +12,13 @@ export const CreateUnit = () => {
       alert("ユニットを作成しました！");
       setName("");
     } catch (error) {
-      if (error instanceof ConnectError) {
+      if (
+        error instanceof ConnectError ||
+        (error &&
+          typeof error === "object" &&
+          "name" in error &&
+          error.name === "ConnectError")
+      ) {
         // gRPC エラーの場合
         console.error("gRPC Error:", error.code, error.message);
         alert(`Error: ${error.message || String(error)}`);
