@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { userClient } from "../lib/grpcClient";
+import { useNavigate } from "react-router-dom";
 // import { ConnectError } from "@bufbuild/connect";
 
 export const UserPage = () => {
@@ -13,6 +14,7 @@ export const UserPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   // ユーザー情報取得
   const fetchUserInfo = async () => {
@@ -39,8 +41,9 @@ export const UserPage = () => {
     e.preventDefault();
     try {
       await userClient.changeEmail({ email });
-      setMessage("メールアドレスを変更しました");
-      fetchUserInfo();
+      setMessage("メールアドレスを変更しました。ログアウトします。");
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/login"), 1000);
     } catch (error) {
       console.error(error);
       setMessage("メールアドレス変更に失敗しました");
@@ -56,10 +59,9 @@ export const UserPage = () => {
         newPassword,
         newCheckPassword: checkPassword,
       });
-      setMessage("パスワードを変更しました");
-      setOldPassword("");
-      setNewPassword("");
-      setCheckPassword("");
+      setMessage("パスワードを変更しました。ログアウトします。");
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/login"), 1000);
     } catch (error) {
       console.error(error);
       setMessage("パスワード変更に失敗しました");
@@ -71,8 +73,9 @@ export const UserPage = () => {
     if (!window.confirm("本当に退会しますか？")) return;
     try {
       await userClient.deleteUser({});
-      setMessage("退会しました");
-      // ログアウト処理やリダイレクトなど
+      setMessage("退会しました。サインアップ画面に移動します。");
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/signup"), 1000);
     } catch (error) {
       console.error(error);
       setMessage("退会に失敗しました");
@@ -80,15 +83,10 @@ export const UserPage = () => {
   };
 
   // ログアウト
-  //   const handleLogout = async () => {
-  //     try {
-  //       await userClient.logout({});
-  //       setMessage("ログアウトしました");
-  //       // トークン削除やリダイレクトなど
-  //     } catch (error) {
-  //       setMessage("ログアウトに失敗しました");
-  //     }
-  //   };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <div>
@@ -140,7 +138,7 @@ export const UserPage = () => {
       </form>
 
       <h3>アカウント操作</h3>
-      {/* <button onClick={handleLogout}>ログアウト</button> */}
+      <button onClick={handleLogout}>ログアウト</button>
       <button onClick={handleDeleteUser} style={{ color: "red" }}>
         退会
       </button>

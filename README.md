@@ -9,8 +9,9 @@
 - singerのpositionによるsortがうまくいかない ok
 - 検索機能
   - フロントの検索だけで良さそう？
-- tokenでやりとりしているから、logoutはフロントだけでいいかも
-- changeEmail,changePasswordした後はログアウトさせたいね
+- tokenでやりとりしているから、logoutはフロントだけでいいかも ok
+- changeEmail,changePasswordした後はログアウトさせたいね ok
+- mylistのフォルダ並び替え機能（フォルダの表示順なので中身は並び替えできなくていい。）
 
 - 生成したコードをそのままリモートに上げてるけど、ちゃんとどのローカルでも生成できるようにした方が良さそうだよナー
 
