@@ -106,7 +106,7 @@ message GetSongRequest {
   int32 id = 1;
 }
 message GetSongResponse {
-  repeated master.Song song = 1;
+  master.Song song = 1;
 }
 message CreateSongRequest {
   string name = 1 [(validate.rules).string = {
@@ -137,7 +137,7 @@ message GetChartRequest {
   int32 id = 1;
 }
 message GetChartResponse {
-  repeated master.Chart chart = 1;
+  master.Chart chart = 1;
 }
 message CreateChartRequest {
   int32 song_id = 1 [(validate.rules).int32.gte = 1];

@@ -16,7 +16,12 @@ export const SignupPage = () => {
       setMessage("サインアップ成功！ログイン画面に移行します。");
       setTimeout(() => navigate("/login"), 1000);
     } catch (error) {
-      setMessage("サインアップ失敗: " + (error.message || String(error)));
+      setMessage(
+        "サインアップ失敗: " +
+          (error && typeof error === "object" && "message" in error
+            ? (error as { message: string }).message
+            : String(error))
+      );
     }
   };
 

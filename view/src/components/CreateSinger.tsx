@@ -20,8 +20,9 @@ export const CreateSinger = () => {
           error.name === "ConnectError")
       ) {
         // gRPC エラーの場合
-        console.error("gRPC Error:", error.code, error.message);
-        alert(`Error: ${error.message || String(error)}`);
+        const grpcError = error as ConnectError;
+        console.error("gRPC Error:", grpcError.code, grpcError.message);
+        alert(`Error: ${grpcError.message || String(grpcError)}`);
       } else {
         // その他のエラーの場合
         console.error("Unexpected Error:", error);

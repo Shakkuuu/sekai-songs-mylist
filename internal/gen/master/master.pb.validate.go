@@ -2734,38 +2734,33 @@ func (m *GetSongResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetSong() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetSongResponseValidationError{
-						field:  fmt.Sprintf("Song[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, GetSongResponseValidationError{
-						field:  fmt.Sprintf("Song[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return GetSongResponseValidationError{
-					field:  fmt.Sprintf("Song[%v]", idx),
+	if all {
+		switch v := interface{}(m.GetSong()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetSongResponseValidationError{
+					field:  "Song",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetSongResponseValidationError{
+					field:  "Song",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetSong()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetSongResponseValidationError{
+				field:  "Song",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
 	if len(errors) > 0 {
@@ -3516,38 +3511,33 @@ func (m *GetChartResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetChart() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetChartResponseValidationError{
-						field:  fmt.Sprintf("Chart[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, GetChartResponseValidationError{
-						field:  fmt.Sprintf("Chart[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return GetChartResponseValidationError{
-					field:  fmt.Sprintf("Chart[%v]", idx),
+	if all {
+		switch v := interface{}(m.GetChart()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetChartResponseValidationError{
+					field:  "Chart",
 					reason: "embedded message failed validation",
 					cause:  err,
-				}
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetChartResponseValidationError{
+					field:  "Chart",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
 			}
 		}
-
+	} else if v, ok := interface{}(m.GetChart()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetChartResponseValidationError{
+				field:  "Chart",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
 	if len(errors) > 0 {

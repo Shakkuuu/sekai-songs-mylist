@@ -18,7 +18,7 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, id uuid.UUID, emali, password string, createdAt, updatedAt, deletedAt time.Time) (*sqlcgen.User, error)
 	ExistsUserByEmail(ctx context.Context, email string) (bool, error)
 	ExistsUserByID(ctx context.Context, id uuid.UUID) (bool, error)
-	UpdateEmail(ctx context.Context, id uuid.UUID, email string) error
-	UpdatePassword(ctx context.Context, id uuid.UUID, password string) error
+	UpdateUserEmail(ctx context.Context, id uuid.UUID, email string, updatedAt time.Time) error
+	UpdateUserPassword(ctx context.Context, id uuid.UUID, password string, updatedAt time.Time) error
 	SoftDeleteUser(ctx context.Context, id uuid.UUID) error
 }

@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+package mylist.v1;
+
+import "enums/mylist.proto";
+import "google/protobuf/timestamp.proto";
+import "master/chart.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/mylist/v1;mylistv1";
+
+// MyList
+message MyList {
+  int32 id = 1;
+  string user_id = 2;
+  string name = 3;
+  int32 position = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+// MyListChart
+message MyListChart {
+  int32 id = 1;
+  int32 my_list_id = 2;
+  master.Chart chart = 3;
+  enums.ClearType clear_type = 4;
+  string memo = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+// MyListChartAttachment
+message MyListChartAttachment {
+  int32 id = 1;
+  int32 my_list_chart_id = 2;
+  enums.AttachmentType attachment_type = 3;
+  string file_url = 4;
+  string caption = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetMyListsByUserIDRequest {}
+message GetMyListsByUserIDResponse {
+  repeated MyList my_lists = 1;
+}
+
+message CreateMyListRequest {
+  string name = 1 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+  int32 position = 2 [(validate.rules).int32.gte = 1];
+}
+message CreateMyListResponse {}
+
+message ChangeMyListNameRequest {
+  int32 id = 1;
+  string name = 2 [(validate.rules).string = {
+    min_len: 1
+    max_len: 255
+  }];
+}
+message ChangeMyListNameResponse {}
+
+message ChangeMyListPositionRequest {
+  repeated int32 id = 1;
+  repeated int32 position = 2 [(validate.rules).repeated.items.int32.gte = 1];
+}
+message ChangeMyListPositionResponse {}
+
+message DeleteMyListRequest {
+  int32 id = 1;
+}
+message DeleteMyListResponse {}
+
+message GetMyListChartsByMyListIDRequest {
+  int32 my_list_id = 1;
+}
+message GetMyListChartsByMyListIDResponse {
+  MyList my_list = 1;
+  repeated MyListChart my_list_charts = 2;
+}
+
+message GetMyListChartByIDRequest {
+  int32 id = 1;
+}
+message GetMyListChartByIDResponse {
+  MyListChart my_list_chart = 1;
+}
+
+message AddMyListChartRequest {
+  int32 my_list_id = 1;
+  int32 chart_id = 2;
+  enums.ClearType clear_type = 3;
+  string memo = 4 [(validate.rules).string = {
+    min_len: 0
+    max_len: 100000
+  }];
+}
+message AddMyListChartResponse {}
+
+message ChangeMyListChartClearTypeRequest {
+  int32 id = 1;
+  enums.ClearType clear_type = 2;
+}
+message ChangeMyListChartClearTypeResponse {}
+
+message ChangeMyListChartMemoRequest {
+  int32 id = 1;
+  string memo = 2 [(validate.rules).string = {
+    min_len: 0
+    max_len: 100000
+  }];
+}
+message ChangeMyListChartMemoResponse {}
+
+message DeleteMyListChartRequest {
+  int32 id = 1;
+}
+message DeleteMyListChartResponse {}
+
+message GetMyListChartAttachmentsByMyListChartIDRequest {
+  int32 my_list_chart_id = 1;
+}
+message GetMyListChartAttachmentsByMyListChartIDResponse {
+  MyListChart my_list_chart = 1;
+  repeated MyListChartAttachment my_list_chart_attachments = 2;
+}
+
+message AddMyListChartAttachmentRequest {
+  int32 my_list_chart_id = 1;
+  enums.AttachmentType attachment_type = 2;
+  string file_url = 3 [(validate.rules).string = {
+    min_len: 1
+    max_len: 10000
+  }];
+  string caption = 4 [(validate.rules).string = {
+    min_len: 1
+    max_len: 100000
+  }];
+}
+message AddMyListChartAttachmentResponse {}
+
+message DeleteMyListChartAttachmentRequest {
+  int32 id = 1;
+}
+message DeleteMyListChartAttachmentResponse {}
+
+service MyListService {
+  rpc GetMyListsByUserID(GetMyListsByUserIDRequest) returns (GetMyListsByUserIDResponse);
+  rpc CreateMyList(CreateMyListRequest) returns (CreateMyListResponse);
+  rpc ChangeMyListName(ChangeMyListNameRequest) returns (ChangeMyListNameResponse);
+  rpc ChangeMyListPosition(ChangeMyListPositionRequest) returns (ChangeMyListPositionResponse);
+  rpc DeleteMyList(DeleteMyListRequest) returns (DeleteMyListResponse);
+
+  rpc GetMyListChartsByMyListID(GetMyListChartsByMyListIDRequest) returns (GetMyListChartsByMyListIDResponse);
+  rpc GetMyListChartByID(GetMyListChartByIDRequest) returns (GetMyListChartByIDResponse);
+  rpc AddMyListChart(AddMyListChartRequest) returns (AddMyListChartResponse);
+  rpc ChangeMyListChartClearType(ChangeMyListChartClearTypeRequest) returns (ChangeMyListChartClearTypeResponse);
+  rpc ChangeMyListChartMemo(ChangeMyListChartMemoRequest) returns (ChangeMyListChartMemoResponse);
+  rpc DeleteMyListChart(DeleteMyListChartRequest) returns (DeleteMyListChartResponse);
+
+  rpc GetMyListChartAttachmentsByMyListChartID(GetMyListChartAttachmentsByMyListChartIDRequest) returns (GetMyListChartAttachmentsByMyListChartIDResponse);
+  rpc AddMyListChartAttachment(AddMyListChartAttachmentRequest) returns (AddMyListChartAttachmentResponse);
+  rpc DeleteMyListChartAttachment(DeleteMyListChartAttachmentRequest) returns (DeleteMyListChartAttachmentResponse);
+}

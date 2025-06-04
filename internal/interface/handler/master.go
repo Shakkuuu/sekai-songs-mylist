@@ -286,78 +286,76 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 }
 
 func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_master.GetSongRequest]) (*connect.Response[proto_master.GetSongResponse], error) {
-	songs, err := h.masterUsecase.GetSongByID(ctx, req.Msg.GetId())
+	song, err := h.masterUsecase.GetSongByID(ctx, req.Msg.GetId())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
 
-	var protoSongs []*proto_master.Song
-	for _, song := range songs {
-		var protoVocalPatterns []*proto_master.VocalPattern
-		for _, vp := range song.VocalPatterns {
-			if vp == nil {
+	var protoSong *proto_master.Song
+	var protoVocalPatterns []*proto_master.VocalPattern
+	for _, vp := range song.VocalPatterns {
+		if vp == nil {
+			continue
+		}
+		sort.Slice(vp.Singers, func(i, j int) bool {
+			return vp.Singers[i].Position < vp.Singers[j].Position
+		})
+		var protoSingers []*proto_master.Singer
+		for _, s := range vp.Singers {
+			if s == nil {
 				continue
 			}
-			sort.Slice(vp.Singers, func(i, j int) bool {
-				return vp.Singers[i].Position < vp.Singers[j].Position
-			})
-			var protoSingers []*proto_master.Singer
-			for _, s := range vp.Singers {
-				if s == nil {
-					continue
-				}
-				protoSingers = append(protoSingers, &proto_master.Singer{
-					Id:   s.ID,
-					Name: s.Name,
-				})
-			}
-			var protoUnits []*proto_master.Unit
-			for _, u := range vp.Units {
-				if u == nil {
-					continue
-				}
-				protoUnits = append(protoUnits, &proto_master.Unit{
-					Id:   u.ID,
-					Name: u.Name,
-				})
-			}
-			protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
-				Id:      vp.ID,
-				Name:    vp.Name,
-				Singers: protoSingers,
-				Units:   protoUnits,
+			protoSingers = append(protoSingers, &proto_master.Singer{
+				Id:   s.ID,
+				Name: s.Name,
 			})
 		}
-		protoSongs = append(protoSongs, &proto_master.Song{
-			Id:   song.ID,
-			Name: song.Name,
-			Kana: song.Kana,
-			Lyrics: &proto_master.Artist{
-				Id:   song.Lyrics.ID,
-				Name: song.Lyrics.Name,
-				Kana: song.Lyrics.Kana,
-			},
-			Music: &proto_master.Artist{
-				Id:   song.Music.ID,
-				Name: song.Music.Name,
-				Kana: song.Music.Kana,
-			},
-			Arrangement: &proto_master.Artist{
-				Id:   song.Arrangement.ID,
-				Name: song.Arrangement.Name,
-				Kana: song.Arrangement.Kana,
-			},
-			Thumbnail:       song.Thumbnail,
-			OriginalVideo:   song.OriginalVideo,
-			ReleaseTime:     timestamppb.New(song.ReleaseTime),
-			Deleted:         song.Deleted,
-			VocalPatterns:   protoVocalPatterns,
-			MusicVideoTypes: song.MusicVideoTypes,
+		var protoUnits []*proto_master.Unit
+		for _, u := range vp.Units {
+			if u == nil {
+				continue
+			}
+			protoUnits = append(protoUnits, &proto_master.Unit{
+				Id:   u.ID,
+				Name: u.Name,
+			})
+		}
+		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
+			Id:      vp.ID,
+			Name:    vp.Name,
+			Singers: protoSingers,
+			Units:   protoUnits,
 		})
+	}
+	protoSong = &proto_master.Song{
+		Id:   song.ID,
+		Name: song.Name,
+		Kana: song.Kana,
+		Lyrics: &proto_master.Artist{
+			Id:   song.Lyrics.ID,
+			Name: song.Lyrics.Name,
+			Kana: song.Lyrics.Kana,
+		},
+		Music: &proto_master.Artist{
+			Id:   song.Music.ID,
+			Name: song.Music.Name,
+			Kana: song.Music.Kana,
+		},
+		Arrangement: &proto_master.Artist{
+			Id:   song.Arrangement.ID,
+			Name: song.Arrangement.Name,
+			Kana: song.Arrangement.Kana,
+		},
+		Thumbnail:       song.Thumbnail,
+		OriginalVideo:   song.OriginalVideo,
+		ReleaseTime:     timestamppb.New(song.ReleaseTime),
+		Deleted:         song.Deleted,
+		VocalPatterns:   protoVocalPatterns,
+		MusicVideoTypes: song.MusicVideoTypes,
 	}
 
 	return connect.NewResponse(&proto_master.GetSongResponse{
-		Song: protoSongs,
+		Song: protoSong,
 	}), nil
 }
 
@@ -431,7 +429,7 @@ func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[prot
 			})
 		}
 
-		var protoSong *proto_master.Song = &proto_master.Song{
+		protoSong := proto_master.Song{
 			Id:   chart.Song.ID,
 			Name: chart.Song.Name,
 			Kana: chart.Song.Kana,
@@ -460,7 +458,7 @@ func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[prot
 
 		protoCharts = append(protoCharts, &proto_master.Chart{
 			Id:             chart.ID,
-			Song:           protoSong,
+			Song:           &protoSong,
 			DifficultyType: chart.DifficultyType,
 			Level:          chart.Level,
 			ChartViewLink:  chart.ChartViewLink,
@@ -472,7 +470,7 @@ func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[prot
 	}), nil
 }
 func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto_master.GetChartRequest]) (*connect.Response[proto_master.GetChartResponse], error) {
-	charts, err := h.masterUsecase.GetChartByID(ctx, req.Msg.GetId())
+	chart, err := h.masterUsecase.GetChartByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
@@ -480,82 +478,80 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
 
-	var protoCharts []*proto_master.Chart
-	for _, chart := range charts {
-		var protoVocalPatterns []*proto_master.VocalPattern
-		for _, vp := range chart.Song.VocalPatterns {
-			if vp == nil {
+	var protoChart *proto_master.Chart
+	var protoVocalPatterns []*proto_master.VocalPattern
+	for _, vp := range chart.Song.VocalPatterns {
+		if vp == nil {
+			continue
+		}
+		sort.Slice(vp.Singers, func(i, j int) bool {
+			return vp.Singers[i].Position < vp.Singers[j].Position
+		})
+		var protoSingers []*proto_master.Singer
+		for _, s := range vp.Singers {
+			if s == nil {
 				continue
 			}
-			sort.Slice(vp.Singers, func(i, j int) bool {
-				return vp.Singers[i].Position < vp.Singers[j].Position
-			})
-			var protoSingers []*proto_master.Singer
-			for _, s := range vp.Singers {
-				if s == nil {
-					continue
-				}
-				protoSingers = append(protoSingers, &proto_master.Singer{
-					Id:   s.ID,
-					Name: s.Name,
-				})
-			}
-			var protoUnits []*proto_master.Unit
-			for _, u := range vp.Units {
-				if u == nil {
-					continue
-				}
-				protoUnits = append(protoUnits, &proto_master.Unit{
-					Id:   u.ID,
-					Name: u.Name,
-				})
-			}
-			protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
-				Id:      vp.ID,
-				Name:    vp.Name,
-				Singers: protoSingers,
-				Units:   protoUnits,
+			protoSingers = append(protoSingers, &proto_master.Singer{
+				Id:   s.ID,
+				Name: s.Name,
 			})
 		}
-
-		var protoSong *proto_master.Song = &proto_master.Song{
-			Id:   chart.Song.ID,
-			Name: chart.Song.Name,
-			Kana: chart.Song.Kana,
-			Lyrics: &proto_master.Artist{
-				Id:   chart.Song.Lyrics.ID,
-				Name: chart.Song.Lyrics.Name,
-				Kana: chart.Song.Lyrics.Kana,
-			},
-			Music: &proto_master.Artist{
-				Id:   chart.Song.Music.ID,
-				Name: chart.Song.Music.Name,
-				Kana: chart.Song.Music.Kana,
-			},
-			Arrangement: &proto_master.Artist{
-				Id:   chart.Song.Arrangement.ID,
-				Name: chart.Song.Arrangement.Name,
-				Kana: chart.Song.Arrangement.Kana,
-			},
-			Thumbnail:       chart.Song.Thumbnail,
-			OriginalVideo:   chart.Song.OriginalVideo,
-			ReleaseTime:     timestamppb.New(chart.Song.ReleaseTime),
-			Deleted:         chart.Song.Deleted,
-			VocalPatterns:   protoVocalPatterns,
-			MusicVideoTypes: chart.Song.MusicVideoTypes,
+		var protoUnits []*proto_master.Unit
+		for _, u := range vp.Units {
+			if u == nil {
+				continue
+			}
+			protoUnits = append(protoUnits, &proto_master.Unit{
+				Id:   u.ID,
+				Name: u.Name,
+			})
 		}
-
-		protoCharts = append(protoCharts, &proto_master.Chart{
-			Id:             chart.ID,
-			Song:           protoSong,
-			DifficultyType: chart.DifficultyType,
-			Level:          chart.Level,
-			ChartViewLink:  chart.ChartViewLink,
+		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
+			Id:      vp.ID,
+			Name:    vp.Name,
+			Singers: protoSingers,
+			Units:   protoUnits,
 		})
 	}
 
+	protoSong := proto_master.Song{
+		Id:   chart.Song.ID,
+		Name: chart.Song.Name,
+		Kana: chart.Song.Kana,
+		Lyrics: &proto_master.Artist{
+			Id:   chart.Song.Lyrics.ID,
+			Name: chart.Song.Lyrics.Name,
+			Kana: chart.Song.Lyrics.Kana,
+		},
+		Music: &proto_master.Artist{
+			Id:   chart.Song.Music.ID,
+			Name: chart.Song.Music.Name,
+			Kana: chart.Song.Music.Kana,
+		},
+		Arrangement: &proto_master.Artist{
+			Id:   chart.Song.Arrangement.ID,
+			Name: chart.Song.Arrangement.Name,
+			Kana: chart.Song.Arrangement.Kana,
+		},
+		Thumbnail:       chart.Song.Thumbnail,
+		OriginalVideo:   chart.Song.OriginalVideo,
+		ReleaseTime:     timestamppb.New(chart.Song.ReleaseTime),
+		Deleted:         chart.Song.Deleted,
+		VocalPatterns:   protoVocalPatterns,
+		MusicVideoTypes: chart.Song.MusicVideoTypes,
+	}
+
+	protoChart = &proto_master.Chart{
+		Id:             chart.ID,
+		Song:           &protoSong,
+		DifficultyType: chart.DifficultyType,
+		Level:          chart.Level,
+		ChartViewLink:  chart.ChartViewLink,
+	}
+
 	return connect.NewResponse(&proto_master.GetChartResponse{
-		Chart: protoCharts,
+		Chart: protoChart,
 	}), nil
 }
 func (h *MasterHandler) CreateChart(ctx context.Context, req *connect.Request[proto_master.CreateChartRequest]) (*connect.Response[proto_master.CreateChartResponse], error) {

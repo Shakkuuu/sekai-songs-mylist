@@ -24,6 +24,34 @@ type Chart struct {
 	ChartViewLink  sql.NullString
 }
 
+type MyList struct {
+	ID        int32
+	UserID    uuid.NullUUID
+	Name      string
+	Position  int32
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
+type MyListChart struct {
+	ID        int32
+	MyListID  sql.NullInt32
+	ChartID   sql.NullInt32
+	ClearType sql.NullInt32
+	Memo      sql.NullString
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
+type MyListChartAttachment struct {
+	ID             int32
+	MyListChartID  sql.NullInt32
+	AttachmentType sql.NullInt32
+	FileUrl        sql.NullString
+	Caption        sql.NullString
+	CreatedAt      sql.NullTime
+}
+
 type Singer struct {
 	ID   int32
 	Name string

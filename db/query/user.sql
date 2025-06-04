@@ -22,13 +22,13 @@ SELECT EXISTS (
   SELECT 1 FROM users WHERE id = $1
 ) AS exists;
 
--- name: UpdateEmail :exec
+-- name: UpdateUserEmail :exec
 UPDATE users
 SET email = $1,
     updated_at = $2
 WHERE id = $3;
 
--- name: UpdatePassword :exec
+-- name: UpdateUserPassword :exec
 UPDATE users
 SET password = $1,
     updated_at = $2

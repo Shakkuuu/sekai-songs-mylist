@@ -248,16 +248,20 @@ func (r *masterRepository) ListSongs(ctx context.Context) ([]*entity.Song, error
 	return sqlToDomainListSong(songs), nil
 }
 
-func (r *masterRepository) GetSongByID(ctx context.Context, id int32) ([]*entity.Song, error) {
-	songs, err := r.queries.GetSongDetailsByID(ctx, id)
+func (r *masterRepository) GetSongByID(ctx context.Context, id int32) (*entity.Song, error) {
+	sqlSongs, err := r.queries.GetSongDetailsByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) || len(songs) <= 0 {
+		if errors.Is(err, sql.ErrNoRows) || len(sqlSongs) <= 0 {
 			return nil, errors.WithStack(repository.ErrNotFound)
 		}
 		return nil, errors.WithStack(err)
 	}
+	songs := sqlToDomainGetSong(sqlSongs)
+	if len(songs) == 0 {
+		return nil, errors.WithStack(repository.ErrNotFound)
+	}
 
-	return sqlToDomainGetSong(songs), nil
+	return songs[0], nil
 }
 
 func (r *masterRepository) CreateSong(
@@ -498,16 +502,20 @@ func (r *masterRepository) ListCharts(ctx context.Context) ([]*entity.Chart, err
 	return sqlToDomainListChart(charts), nil
 }
 
-func (r *masterRepository) GetChartByID(ctx context.Context, id int32) ([]*entity.Chart, error) {
-	charts, err := r.queries.GetChartWithSongWithArtistsByID(ctx, id)
+func (r *masterRepository) GetChartByID(ctx context.Context, id int32) (*entity.Chart, error) {
+	sqlCharts, err := r.queries.GetChartWithSongWithArtistsByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) || len(charts) <= 0 {
+		if errors.Is(err, sql.ErrNoRows) || len(sqlCharts) <= 0 {
 			return nil, errors.WithStack(repository.ErrNotFound)
 		}
 		return nil, errors.WithStack(err)
 	}
+	charts := sqlToDomainGetChart(sqlCharts)
+	if len(charts) == 0 {
+		return nil, errors.WithStack(repository.ErrNotFound)
+	}
 
-	return sqlToDomainGetChart(charts), nil
+	return charts[0], nil
 }
 
 func (r *masterRepository) CreateChart(ctx context.Context, songID, difficultyType, level int32, chartViewLink string) (*sqlcgen.Chart, error) {

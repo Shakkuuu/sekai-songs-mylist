@@ -22,10 +22,3 @@ enum MusicVideoType {
   MUSIC_VIDEO_TYPE_2D = 2;
   MUSIC_VIDEO_TYPE_ORIGINAL = 3;
 }
-
-// AttachmentTypes
-enum AttachmentType {
-  ATTACHMENT_TYPE_UNSPECIFIED = 0;
-  ATTACHMENT_TYPE_PICTURE = 1;
-  ATTACHMENT_TYPE_MOVIE = 2;
-}

@@ -95,28 +95,28 @@ func (r *userRepository) ExistsUserByID(ctx context.Context, id uuid.UUID) (bool
 	return exist, nil
 }
 
-func (r *userRepository) UpdateEmail(ctx context.Context, id uuid.UUID, email string) error {
-	arg := sqlcgen.UpdateEmailParams{
+func (r *userRepository) UpdateUserEmail(ctx context.Context, id uuid.UUID, email string, updatedAt time.Time) error {
+	arg := sqlcgen.UpdateUserEmailParams{
 		Email:     email,
-		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
 		ID:        id,
 	}
 
-	if err := r.queries.UpdateEmail(ctx, arg); err != nil {
+	if err := r.queries.UpdateUserEmail(ctx, arg); err != nil {
 		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-func (r *userRepository) UpdatePassword(ctx context.Context, id uuid.UUID, password string) error {
-	arg := sqlcgen.UpdatePasswordParams{
+func (r *userRepository) UpdateUserPassword(ctx context.Context, id uuid.UUID, password string, updatedAt time.Time) error {
+	arg := sqlcgen.UpdateUserPasswordParams{
 		Password:  password,
-		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
 		ID:        id,
 	}
 
-	if err := r.queries.UpdatePassword(ctx, arg); err != nil {
+	if err := r.queries.UpdateUserPassword(ctx, arg); err != nil {
 		return errors.WithStack(err)
 	}
 

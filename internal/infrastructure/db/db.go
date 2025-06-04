@@ -10,7 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type DBConfing struct {
+type DBConfig struct {
 	Host     string
 	User     string
 	Password string
@@ -18,7 +18,7 @@ type DBConfing struct {
 	Port     int
 }
 
-func Init(config DBConfing) (*sql.DB, *sqlcgen.Queries, error) {
+func Init(config DBConfig) (*sql.DB, *sqlcgen.Queries, error) {
 	var err error
 	var db *sql.DB
 	CONNECT := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",

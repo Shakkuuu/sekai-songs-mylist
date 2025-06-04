@@ -22,8 +22,14 @@ export const CreateArtist = () => {
           error.name === "ConnectError")
       ) {
         // gRPC エラーの場合
-        console.error("gRPC Error:", error.code, error.message);
-        alert(`Error: ${error.message || String(error)}`);
+        const code =
+          "code" in error ? (error as { code: string }).code : undefined;
+        const errorMessage =
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message?: string }).message
+            : String(error);
+        console.error("gRPC Error:", code, errorMessage);
+        alert(`Error: ${errorMessage}`);
       } else {
         // その他のエラーの場合
         console.error("Unexpected Error:", error);

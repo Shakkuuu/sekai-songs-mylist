@@ -91,31 +91,3 @@ proto3.util.setEnumType(MusicVideoType, "enums.MusicVideoType", [
   { no: 3, name: "MUSIC_VIDEO_TYPE_ORIGINAL" },
 ]);
 
-/**
- * AttachmentTypes
- *
- * @generated from enum enums.AttachmentType
- */
-export enum AttachmentType {
-  /**
-   * @generated from enum value: ATTACHMENT_TYPE_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: ATTACHMENT_TYPE_PICTURE = 1;
-   */
-  PICTURE = 1,
-
-  /**
-   * @generated from enum value: ATTACHMENT_TYPE_MOVIE = 2;
-   */
-  MOVIE = 2,
-}
-// Retrieve enum metadata with: proto3.getEnumType(AttachmentType)
-proto3.util.setEnumType(AttachmentType, "enums.AttachmentType", [
-  { no: 0, name: "ATTACHMENT_TYPE_UNSPECIFIED" },
-  { no: 1, name: "ATTACHMENT_TYPE_PICTURE" },
-  { no: 2, name: "ATTACHMENT_TYPE_MOVIE" },
-]);
-

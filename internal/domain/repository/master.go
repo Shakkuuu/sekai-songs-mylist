@@ -42,7 +42,7 @@ type MasterRepository interface {
 	CreateSongMusicVideoType(ctx context.Context, songID int32, musicVideoType enums.MusicVideoType) (*sqlcgen.SongMusicVideoType, error)
 	// Song
 	ListSongs(ctx context.Context) ([]*entity.Song, error)
-	GetSongByID(ctx context.Context, id int32) ([]*entity.Song, error)
+	GetSongByID(ctx context.Context, id int32) (*entity.Song, error)
 	CreateSong(ctx context.Context,
 		name, kana string,
 		lyrics_id, music_id, arrangement_id int32,
@@ -52,7 +52,7 @@ type MasterRepository interface {
 	ExistsSong(ctx context.Context, id int32) (bool, error)
 	// Chart
 	ListCharts(ctx context.Context) ([]*entity.Chart, error)
-	GetChartByID(ctx context.Context, id int32) ([]*entity.Chart, error)
+	GetChartByID(ctx context.Context, id int32) (*entity.Chart, error)
 	CreateChart(ctx context.Context, songID, difficultyType, level int32, chartViewLink string) (*sqlcgen.Chart, error)
 	ExistsChart(ctx context.Context, id int32) (bool, error)
 }

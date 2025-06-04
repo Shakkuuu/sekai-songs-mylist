@@ -21,7 +21,7 @@ CREATE TABLE songs (
     lyrics_id INT REFERENCES artists(id),
     music_id INT REFERENCES artists(id),
     arrangement_id INT REFERENCES artists(id),
-    thumbnail VARCHAR(255),
+    thumbnail TEXT,
     original_video TEXT,
     release_time TIMESTAMP,
     deleted BOOLEAN DEFAULT FALSE
@@ -32,7 +32,7 @@ CREATE TABLE charts (
     song_id INT REFERENCES songs(id),
     difficulty_type INT,
     level INT,
-    chart_view_link VARCHAR(255)
+    chart_view_link TEXT
 );
 
 CREATE TABLE vocal_patterns (

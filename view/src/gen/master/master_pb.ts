@@ -870,9 +870,9 @@ export class GetSongRequest extends Message<GetSongRequest> {
  */
 export class GetSongResponse extends Message<GetSongResponse> {
   /**
-   * @generated from field: repeated master.Song song = 1;
+   * @generated from field: master.Song song = 1;
    */
-  song: Song[] = [];
+  song?: Song;
 
   constructor(data?: PartialMessage<GetSongResponse>) {
     super();
@@ -882,7 +882,7 @@ export class GetSongResponse extends Message<GetSongResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "master.GetSongResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "song", kind: "message", T: Song, repeated: true },
+    { no: 1, name: "song", kind: "message", T: Song },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSongResponse {
@@ -1136,9 +1136,9 @@ export class GetChartRequest extends Message<GetChartRequest> {
  */
 export class GetChartResponse extends Message<GetChartResponse> {
   /**
-   * @generated from field: repeated master.Chart chart = 1;
+   * @generated from field: master.Chart chart = 1;
    */
-  chart: Chart[] = [];
+  chart?: Chart;
 
   constructor(data?: PartialMessage<GetChartResponse>) {
     super();
@@ -1148,7 +1148,7 @@ export class GetChartResponse extends Message<GetChartResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "master.GetChartResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "chart", kind: "message", T: Chart, repeated: true },
+    { no: 1, name: "chart", kind: "message", T: Chart },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetChartResponse {

@@ -20,7 +20,10 @@ export const LoginPage = () => {
         setMessage("トークンが取得できませんでした");
       }
     } catch (error) {
-      setMessage("ログイン失敗: " + (error.message || String(error)));
+      setMessage(
+        "ログイン失敗: " +
+          (error instanceof Error ? error.message : String(error))
+      );
     }
   };
 

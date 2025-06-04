@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/domain/repository"
@@ -30,7 +29,7 @@ func (h *UserHandler) UserInfo(ctx context.Context, req *connect.Request[proto_u
 		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
 	}
 
-	user, err := h.userUsecase.GetUserByID(ctx, id)
+	user, err := h.userUsecase.UserInfo(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
@@ -71,11 +70,7 @@ func (h *UserHandler) ChangeEmail(ctx context.Context, req *connect.Request[prot
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
 	}
 
-	if err := h.userUsecase.UpdateEmail(ctx, id, req.Msg.GetEmail()); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-
-	user, err := h.userUsecase.GetUserByID(ctx, id)
+	user, err := h.userUsecase.ChangeEmail(ctx, id, req.Msg.GetEmail())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
@@ -106,30 +101,13 @@ func (h *UserHandler) ChangePassword(ctx context.Context, req *connect.Request[p
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("password, check_password not match"))
 	}
 
-	user, err := h.userUsecase.GetUserByID(ctx, id)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Msg.GetOldPassword()))
-	if err == bcrypt.ErrMismatchedHashAndPassword {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
-	} else if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Msg.GetNewPassword()), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-
-	if err := h.userUsecase.UpdatePassword(ctx, id, string(hash)); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-
-	updatedUser, err := h.userUsecase.GetUserByID(ctx, id)
+	updatedUser, err := h.userUsecase.ChangePassword(ctx, id, req.Msg.GetOldPassword(), req.Msg.GetNewPassword())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+		}
+		if errors.Is(err, usecase.ErrMismatchedHashAndPassword) {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
 		}
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
@@ -147,15 +125,10 @@ func (h *UserHandler) DeleteUser(ctx context.Context, req *connect.Request[proto
 		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
 	}
 
-	exist, err := h.userUsecase.ExistsUserByID(ctx, id)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
-	}
-	if !exist {
-		return nil, connect.NewError(connect.CodeNotFound, errors.New("This id user not found"))
-	}
-
-	if err := h.userUsecase.SoftDeleteUser(ctx, id); err != nil {
+	if err := h.userUsecase.DeleteUser(ctx, id); err != nil {
+		if errors.Is(err, usecase.ErrUserNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+		}
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
 

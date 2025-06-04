@@ -39,8 +39,20 @@ export const CreateChart = () => {
           error.name === "ConnectError")
       ) {
         // gRPC エラーの場合
-        console.error("gRPC Error:", error.code, error.message);
-        alert(`Error: ${error.message || String(error)}`);
+        if ("code" in error) {
+          console.error(
+            "gRPC Error:",
+            (error as ConnectError).code,
+            (error as ConnectError).message
+          );
+        } else {
+          console.error("gRPC Error:", (error as ConnectError).message);
+        }
+        const errorMessage =
+          typeof error === "object" && error !== null && "message" in error
+            ? String((error as { message: unknown }).message)
+            : String(error);
+        alert(`Error: ${errorMessage}`);
       } else {
         // その他のエラーの場合
         console.error("Unexpected Error:", error);

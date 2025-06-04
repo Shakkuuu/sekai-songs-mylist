@@ -162,38 +162,38 @@ func (q *Queries) SoftDeleteUser(ctx context.Context, arg SoftDeleteUserParams) 
 	return err
 }
 
-const updateEmail = `-- name: UpdateEmail :exec
+const updateUserEmail = `-- name: UpdateUserEmail :exec
 UPDATE users
 SET email = $1,
     updated_at = $2
 WHERE id = $3
 `
 
-type UpdateEmailParams struct {
+type UpdateUserEmailParams struct {
 	Email     string
 	UpdatedAt sql.NullTime
 	ID        uuid.UUID
 }
 
-func (q *Queries) UpdateEmail(ctx context.Context, arg UpdateEmailParams) error {
-	_, err := q.db.ExecContext(ctx, updateEmail, arg.Email, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserEmail, arg.Email, arg.UpdatedAt, arg.ID)
 	return err
 }
 
-const updatePassword = `-- name: UpdatePassword :exec
+const updateUserPassword = `-- name: UpdateUserPassword :exec
 UPDATE users
 SET password = $1,
     updated_at = $2
 WHERE id = $3
 `
 
-type UpdatePasswordParams struct {
+type UpdateUserPasswordParams struct {
 	Password  string
 	UpdatedAt sql.NullTime
 	ID        uuid.UUID
 }
 
-func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updatePassword, arg.Password, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Password, arg.UpdatedAt, arg.ID)
 	return err
 }

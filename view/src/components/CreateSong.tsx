@@ -63,8 +63,31 @@ export const CreateSong = () => {
           error.name === "ConnectError")
       ) {
         // gRPC エラーの場合
-        console.error("gRPC Error:", error.code, error.message);
-        alert(`Error: ${error.message || String(error)}`);
+        if ("code" in error) {
+          if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            "message" in error
+          ) {
+            console.error(
+              "gRPC Error:",
+              (error as { code: unknown; message: unknown }).code,
+              (error as { code: unknown; message: unknown }).message
+            );
+          } else {
+            console.error("gRPC Error:", error);
+          }
+        } else {
+          console.error("gRPC Error:", (error as ConnectError).message);
+        }
+        alert(
+          `Error: ${
+            typeof error === "object" && error !== null && "message" in error
+              ? (error as { message: string }).message
+              : String(error)
+          }`
+        );
       } else {
         // その他のエラーの場合
         console.error("Unexpected Error:", error);
