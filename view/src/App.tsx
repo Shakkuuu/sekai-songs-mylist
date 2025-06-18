@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { MasterPage } from "./pages/MasterPage";
 import { SignupPage } from "./pages/SignupPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -12,28 +12,6 @@ import { MyListChartDetailPage } from "./pages/MyListChartDetailPage";
 export const App = () => {
   return (
     <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/master">master</Link>
-          </li>
-          <li>
-            <Link to="/signup">signup</Link>
-          </li>
-          <li>
-            <Link to="/login">login</Link>
-          </li>
-          <li>
-            <Link to="/user">user</Link>
-          </li>
-          <li>
-            <Link to="/mylist">mylist</Link>
-          </li>
-          <li>
-            <Link to="/">top</Link>
-          </li>
-        </ul>
-      </nav>
       <Routes>
         <Route path="/" element={<TopPage />} />
         <Route path="/master" element={<MasterPage />} />

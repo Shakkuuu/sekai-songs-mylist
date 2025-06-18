@@ -11,6 +11,7 @@ export const CreateSinger = () => {
       await masterClient.createSinger({ name });
       alert("シンガーを作成しました！");
       setName("");
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||

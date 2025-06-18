@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { userClient } from "../lib/grpcClient";
 import { useNavigate } from "react-router-dom";
+import { HamburgerMenu } from "../components/HamburgerMenu";
+import "../styles/common.css";
 // import { ConnectError } from "@bufbuild/connect";
 
 export const UserPage = () => {
@@ -89,18 +91,33 @@ export const UserPage = () => {
   };
 
   return (
-    <div>
-      <h2>ユーザー情報</h2>
-      {user ? (
-        <div>
-          <div>ID: {user.id}</div>
-          <div>メール: {user.email}</div>
-          <div>作成日: {user.createdAt}</div>
+    <div className="container">
+      <HamburgerMenu />
+      <div className="page-header">
+        <h1>ユーザー情報</h1>
+      </div>
+      <div className="card">
+        <h2>プロフィール</h2>
+        <div className="form-group">
+          <label>メールアドレス</label>
+          <p>{user ? user.email : "ユーザー情報取得中..."}</p>
         </div>
-      ) : (
-        <div>ユーザー情報取得中...</div>
-      )}
-
+        <div className="form-group">
+          <label>登録日</label>
+          <p>{user ? user.createdAt : "ユーザー情報取得中..."}</p>
+        </div>
+      </div>
+      <div className="card">
+        <h2>マイリスト統計</h2>
+        <div className="form-group">
+          <label>作成したマイリスト数</label>
+          <p>3</p>
+        </div>
+        <div className="form-group">
+          <label>登録した譜面数</label>
+          <p>15</p>
+        </div>
+      </div>
       <h3>メールアドレス変更</h3>
       <form onSubmit={handleChangeEmail}>
         <input

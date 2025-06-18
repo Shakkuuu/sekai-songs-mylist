@@ -30,6 +30,7 @@ export const CreateChart = () => {
       setDifficultyType(DifficultyType.UNSPECIFIED);
       setLevel(0);
       setChartViewLink("");
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||

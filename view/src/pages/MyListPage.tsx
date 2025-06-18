@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { myListClient } from "../lib/grpcClient";
 import { useNavigate } from "react-router-dom";
+import { myListClient } from "../lib/grpcClient";
 import {
   MyList,
   GetMyListsByUserIDRequest,
   ChangeMyListPositionRequest,
-  DeleteMyListRequest,
   ChangeMyListNameRequest,
+  DeleteMyListRequest
 } from "../gen/mylist/v1/mylist_pb";
+import { HamburgerMenu } from "../components/HamburgerMenu";
+import "../styles/common.css";
+import "./MyListPage.css";
 
 export const MyListPage = () => {
   const [myLists, setMyLists] = useState<MyList[]>([]);
@@ -18,9 +21,11 @@ export const MyListPage = () => {
   const [editName, setEditName] = useState("");
 
   useEffect(() => {
-    myListClient
-      .getMyListsByUserID(new GetMyListsByUserIDRequest())
-      .then((res) => setMyLists(res.myLists));
+    const fetchMyLists = async () => {
+      const response = await myListClient.getMyListsByUserID(new GetMyListsByUserIDRequest());
+      setMyLists(response.myLists);
+    };
+    fetchMyLists();
   }, []);
 
   const handleCreate = async () => {
@@ -38,7 +43,7 @@ export const MyListPage = () => {
 
   // 並び替え
   const handleDragStart = (idx: number) => setDragIndex(idx);
-  const handleDragOver = (e: React.DragEvent<HTMLLIElement>) =>
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) =>
     e.preventDefault();
   const handleDrop = async (idx: number) => {
     if (dragIndex === null || dragIndex === idx) return;
@@ -84,57 +89,57 @@ export const MyListPage = () => {
   };
 
   return (
-    <div>
-      <h2>マイリスト一覧</h2>
-      <input
-        value={newName}
-        onChange={(e) => setNewName(e.target.value)}
-        placeholder="新規マイリスト名"
-      />
-      <button onClick={handleCreate}>追加</button>
-      <ul>
-        {myLists
-          .slice()
-          .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-          .map((ml, idx) => (
-            <li
-              key={ml.id}
-              draggable
-              onDragStart={() => handleDragStart(idx)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(idx)}
-              style={{
-                border: "1px solid #ccc",
-                margin: "4px 0",
-                padding: "4px",
-                background: dragIndex === idx ? "#f0f0f0" : "white",
-                cursor: "move",
-              }}
-            >
-              {editId === ml.id ? (
-                <>
-                  <input
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    style={{ marginRight: 8 }}
-                  />
-                  <button onClick={handleEditSave}>保存</button>
-                  <button onClick={handleEditCancel}>キャンセル</button>
-                </>
-              ) : (
-                <>
-                  {ml.name}
-                  <button onClick={() => navigate(`/mylist/${ml.id}`)}>
-                    編集
-                  </button>
-                  <button onClick={() => handleEdit(ml)}>名前変更</button>
-                  <button onClick={() => handleDelete(ml.id)}>削除</button>
-                  <span style={{ marginLeft: 8, color: "#888" }}>⇅</span>
-                </>
-              )}
-            </li>
-          ))}
-      </ul>
+    <div className="container">
+      <HamburgerMenu />
+      <div className="page-header">
+        <h1>マイリスト</h1>
+      </div>
+      <div className="card">
+        <div className="form-group">
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="新しいマイリスト名"
+          />
+          <button className="button" onClick={handleCreate}>
+            新規マイリスト作成
+          </button>
+        </div>
+      </div>
+      <div className="mylist-grid">
+        {myLists.map((myList) => (
+          <div
+            key={myList.id}
+            className="card mylist-card"
+            draggable
+            onDragStart={() => handleDragStart(myLists.indexOf(myList))}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(myLists.indexOf(myList))}
+          >
+            {editId === myList.id ? (
+              <div className="edit-form">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+                <button onClick={handleEditSave}>保存</button>
+                <button onClick={handleEditCancel}>キャンセル</button>
+              </div>
+            ) : (
+              <>
+                <h3 onClick={() => navigate(`/mylist/${myList.id}`)}>{myList.name}</h3>
+                <p>作成日: {myList.createdAt?.toDate().toLocaleDateString()}</p>
+                <div className="mylist-actions">
+                  <button onClick={() => handleEdit(myList)}>編集</button>
+                  <button onClick={() => handleDelete(myList.id)}>削除</button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

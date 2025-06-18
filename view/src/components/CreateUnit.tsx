@@ -11,6 +11,7 @@ export const CreateUnit = () => {
       await masterClient.createUnit({ name });
       alert("ユニットを作成しました！");
       setName("");
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||

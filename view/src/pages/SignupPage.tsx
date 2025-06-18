@@ -1,69 +1,65 @@
 import { useState } from "react";
-import { authClient } from "../lib/grpcClient";
 import { useNavigate } from "react-router-dom";
+import { HamburgerMenu } from "../components/HamburgerMenu";
+import "../styles/common.css";
 
 export const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [checkPassword, setCheckPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await authClient.signup({ email, password, checkPassword });
-      setMessage("サインアップ成功！ログイン画面に移行します。");
-      setTimeout(() => navigate("/login"), 1000);
-    } catch (error) {
-      setMessage(
-        "サインアップ失敗: " +
-          (error && typeof error === "object" && "message" in error
-            ? (error as { message: string }).message
-            : String(error))
-      );
+    if (password !== confirmPassword) {
+      alert("パスワードが一致しません");
+      return;
     }
+    // TODO: 新規登録処理の実装
+    navigate("/login");
   };
 
   return (
-    <div>
-      <h2>Signup</h2>
-      <form onSubmit={handleSignup}>
-        <div>
-          <label>
-            Email:{" "}
+    <div className="container">
+      <HamburgerMenu />
+      <div className="page-header">
+        <h1>新規登録</h1>
+      </div>
+      <div className="card">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">メールアドレス</label>
             <input
+              type="email"
+              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password:{" "}
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">パスワード</label>
             <input
               type="password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            パスワードの確認:{" "}
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">パスワード（確認）</label>
             <input
               type="password"
-              value={checkPassword}
-              onChange={(e) => setCheckPassword(e.target.value)}
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-          </label>
-        </div>
-        <button type="submit">Signup</button>
-      </form>
-      {message && <div>{message}</div>}
+          </div>
+          <button type="submit" className="button">登録</button>
+        </form>
+      </div>
     </div>
   );
 };

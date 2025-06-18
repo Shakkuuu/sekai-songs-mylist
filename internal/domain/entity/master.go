@@ -38,6 +38,7 @@ type Song struct {
 	ReleaseTime     time.Time
 	Deleted         bool
 	VocalPatterns   []*VocalPattern
+	Units           []*Unit
 	MusicVideoTypes []enums.MusicVideoType
 }
 
@@ -56,7 +57,6 @@ type VocalPattern struct {
 	ID      int32
 	Name    string
 	Singers []*Singer
-	Units   []*Unit
 }
 
 type VocalPatternSinger struct {
@@ -66,8 +66,8 @@ type VocalPatternSinger struct {
 	Position       int32
 }
 
-type VocalPatternUnit struct {
-	ID             int32
-	VocalPatternID int32
-	UnitID         int32
+type SongUnit struct {
+	ID     int32
+	SongID int32
+	UnitID int32
 }

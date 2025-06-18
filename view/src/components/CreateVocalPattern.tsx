@@ -1,22 +1,19 @@
 import { useState } from "react";
 import { masterClient } from "../lib/grpcClient";
 import { ConnectError } from "@bufbuild/connect";
-import { useSongs, useSingers, useUnits } from "../hooks/useMasterLists";
+import { useSongs, useSingers } from "../hooks/useMasterLists";
 import Select from "react-select";
 
 export const CreateVocalPattern = () => {
   const songs = useSongs();
   const singers = useSingers();
-  const units = useUnits();
 
   const [songId, setSongId] = useState<number>(0);
   const [name, setName] = useState<string>("");
   const [selectedSingerIds, setSelectedSingerIds] = useState<number[]>([]);
   const [singerPositions, setSingerPositions] = useState<string>(""); // comma-separated positions
-  const [selectedUnitIds, setSelectedUnitIds] = useState<number[]>([]);
 
   const singerOptions = singers.map((s) => ({ value: s.id, label: s.name }));
-  const unitOptions = units.map((u) => ({ value: u.id, label: u.name }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +28,6 @@ export const CreateVocalPattern = () => {
         name,
         singerIds: selectedSingerIds,
         singerPositions: singerPositionsArray,
-        unitIds: selectedUnitIds,
       });
       alert("VocalPattern created successfully!");
       setSongId(0);
@@ -39,7 +35,7 @@ export const CreateVocalPattern = () => {
       setName("");
       setSelectedSingerIds([]);
       setSingerPositions("");
-      setSelectedUnitIds([]);
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||
@@ -118,21 +114,6 @@ export const CreateVocalPattern = () => {
             type="text"
             value={singerPositions}
             onChange={(e) => setSingerPositions(e.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Units:
-          <Select
-            isMulti
-            options={unitOptions}
-            value={unitOptions.filter((opt) =>
-              selectedUnitIds.includes(opt.value)
-            )}
-            onChange={(opts) =>
-              setSelectedUnitIds(opts.map((opt) => opt.value))
-            }
           />
         </label>
       </div>

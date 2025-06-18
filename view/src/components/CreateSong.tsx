@@ -3,10 +3,12 @@ import { masterClient } from "../lib/grpcClient";
 import { Timestamp } from "@bufbuild/protobuf"; // Timestamp をインポート
 import { ConnectError } from "@bufbuild/connect"; // ConnectError をインポート
 import { MusicVideoType } from "../gen/enums/master_pb";
-import { useArtists } from "../hooks/useMasterLists";
+import { useArtists, useUnits } from "../hooks/useMasterLists";
+import Select from "react-select";
 
 export const CreateSong = () => {
   const artists = useArtists();
+  const units = useUnits();
 
   const [name, setName] = useState<string>("");
   const [kana, setKana] = useState<string>("");
@@ -14,10 +16,15 @@ export const CreateSong = () => {
   const [musicId, setMusicId] = useState<number>(0);
   const [arrangementId, setArrangementId] = useState<number>(0);
   const [thumbnail, setThumbnail] = useState<string>("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null); // ファイルを保持
   const [originalVideo, setOriginalVideo] = useState<string>("");
   const [releaseTime, setReleaseTime] = useState<string>(""); // ISO string
   const [deleted, setDeleted] = useState<boolean>(false);
+  const [selectedUnitIds, setSelectedUnitIds] = useState<number[]>([]);
   const [musicVideoTypes, setMusicVideoTypes] = useState<MusicVideoType[]>([]);
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const unitOptions = units.map((u) => ({ value: u.id, label: u.name }));
 
   const handleMusicVideoTypeChange = (type: MusicVideoType) => {
     setMusicVideoTypes((prev) =>
@@ -25,8 +32,58 @@ export const CreateSong = () => {
     );
   };
 
+  // サムネイルファイル選択時の処理
+  const handleThumbnailChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // 拡張子チェック
+    if (!["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+      alert("png, jpeg, jpg のみアップロードできます");
+      return;
+    }
+    setThumbnailFile(file);
+    setThumbnail(""); // URLは一旦クリア
+  };
+
+  // サムネイルアップロード処理
+  const handleThumbnailUpload = async () => {
+    if (!thumbnailFile) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", thumbnailFile);
+
+    try {
+      const res = await fetch("http://localhost:8888/upload/thumbnail", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        throw new Error("アップロードに失敗しました");
+      }
+      const data = await res.json();
+      if (!data.url) {
+        throw new Error("サーバーからURLが返されませんでした");
+      }
+      setThumbnail(data.url);
+      alert("サムネイルをアップロードしました");
+    } catch (err) {
+      alert("サムネイルのアップロードに失敗しました");
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // サムネイルが未アップロードの場合は警告
+    if (!thumbnail) {
+      alert("サムネイル画像をアップロードしてください");
+      return;
+    }
 
     console.log(Timestamp.fromDate(new Date(releaseTime)));
     try {
@@ -40,6 +97,7 @@ export const CreateSong = () => {
         originalVideo,
         releaseTime: Timestamp.fromDate(new Date(releaseTime)),
         deleted,
+        unitIds: selectedUnitIds,
         musicVideoTypes,
       });
 
@@ -50,10 +108,13 @@ export const CreateSong = () => {
       setMusicId(0);
       setArrangementId(0);
       setThumbnail("");
+      setThumbnailFile(null);
       setOriginalVideo("");
       setReleaseTime("");
       setDeleted(false);
+      setSelectedUnitIds([]);
       setMusicVideoTypes([]);
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||
@@ -176,11 +237,26 @@ export const CreateSong = () => {
         <label>
           Thumbnail:
           <input
-            type="text"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
+            type="file"
+            accept=".png,.jpeg,.jpg"
+            onChange={handleThumbnailChange}
           />
         </label>
+        <button
+          type="button"
+          onClick={handleThumbnailUpload}
+          disabled={!thumbnailFile || uploading}
+          style={{ marginLeft: 8 }}
+        >
+          {uploading ? "アップロード中..." : "アップロード"}
+        </button>
+        {thumbnail && (
+          <span style={{ marginLeft: 8 }}>
+            <a href={thumbnail} target="_blank" rel="noopener noreferrer">
+              サムネイル画像を確認
+            </a>
+          </span>
+        )}
       </div>
       <div>
         <label>
@@ -209,6 +285,21 @@ export const CreateSong = () => {
             type="checkbox"
             checked={deleted}
             onChange={(e) => setDeleted(e.target.checked)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Units:
+          <Select
+            isMulti
+            options={unitOptions}
+            value={unitOptions.filter((opt) =>
+              selectedUnitIds.includes(opt.value)
+            )}
+            onChange={(opts) =>
+              setSelectedUnitIds(opts.map((opt) => opt.value))
+            }
           />
         </label>
       </div>

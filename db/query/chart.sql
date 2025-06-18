@@ -30,7 +30,7 @@ SELECT
     si.name AS singer_name,
     vps.position AS singer_order,
 
-    vpu.unit_id,
+    su.unit_id,
     u.name AS unit_name,
 
     smvt.music_video_type AS music_video_type_id,
@@ -47,8 +47,8 @@ LEFT JOIN artists aa ON s.arrangement_id = aa.id
 LEFT JOIN vocal_patterns vp ON vp.song_id = s.id
 LEFT JOIN vocal_pattern_singers vps ON vps.vocal_pattern_id = vp.id
 LEFT JOIN singers si ON vps.singer_id = si.id
-LEFT JOIN vocal_pattern_units vpu ON vpu.vocal_pattern_id = vp.id
-LEFT JOIN units u ON vpu.unit_id = u.id
+LEFT JOIN song_units su ON su.song_id = s.id
+LEFT JOIN units u ON su.unit_id = u.id
 LEFT JOIN song_music_video_types smvt ON smvt.song_id = s.id
 WHERE c.id = $1;
 
@@ -84,7 +84,7 @@ SELECT
     si.name AS singer_name,
     vps.position AS singer_order,
 
-    vpu.unit_id,
+    su.unit_id,
     u.name AS unit_name,
 
     smvt.music_video_type AS music_video_type_id,
@@ -101,8 +101,8 @@ LEFT JOIN artists aa ON s.arrangement_id = aa.id
 LEFT JOIN vocal_patterns vp ON vp.song_id = s.id
 LEFT JOIN vocal_pattern_singers vps ON vps.vocal_pattern_id = vp.id
 LEFT JOIN singers si ON vps.singer_id = si.id
-LEFT JOIN vocal_pattern_units vpu ON vpu.vocal_pattern_id = vp.id
-LEFT JOIN units u ON vpu.unit_id = u.id
+LEFT JOIN song_units su ON su.song_id = s.id
+LEFT JOIN units u ON su.unit_id = u.id
 LEFT JOIN song_music_video_types smvt ON smvt.song_id = s.id
 ORDER BY c.id;
 

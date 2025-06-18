@@ -5,6 +5,7 @@ package master;
 import "enums/master.proto";
 import "google/protobuf/timestamp.proto";
 import "master/artist.proto";
+import "master/unit.proto";
 import "master/vocal_pattern.proto";
 
 option go_package = "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master";
@@ -23,5 +24,6 @@ message Song {
   bool deleted = 10;
 
   repeated master.VocalPattern vocal_patterns = 11;
-  repeated enums.MusicVideoType music_video_types = 12;
+  repeated master.Unit units = 12;
+  repeated enums.MusicVideoType music_video_types = 13;
 }

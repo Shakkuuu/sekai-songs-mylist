@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"sort"
 
 	"connectrpc.com/connect"
@@ -142,24 +144,23 @@ func (h *MyListHandler) GetMyListChartsByMyListID(ctx context.Context, req *conn
 					Name: s.Name,
 				})
 			}
-			var protoUnits []*proto_master.Unit
-			for _, u := range vp.Units {
-				if u == nil {
-					continue
-				}
-				protoUnits = append(protoUnits, &proto_master.Unit{
-					Id:   u.ID,
-					Name: u.Name,
-				})
-			}
 			protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 				Id:      vp.ID,
 				Name:    vp.Name,
 				Singers: protoSingers,
-				Units:   protoUnits,
 			})
 		}
 
+		var protoUnits []*proto_master.Unit
+		for _, u := range myListChart.Chart.Song.Units {
+			if u == nil {
+				continue
+			}
+			protoUnits = append(protoUnits, &proto_master.Unit{
+				Id:   u.ID,
+				Name: u.Name,
+			})
+		}
 		protoMyListCharts[i] = &proto_my_list.MyListChart{
 			Id:       myListChart.ID,
 			MyListId: myListChart.MyListID,
@@ -189,6 +190,7 @@ func (h *MyListHandler) GetMyListChartsByMyListID(ctx context.Context, req *conn
 					ReleaseTime:     timestamppb.New(myListChart.Chart.Song.ReleaseTime),
 					Deleted:         myListChart.Chart.Song.Deleted,
 					VocalPatterns:   protoVocalPatterns,
+					Units:           protoUnits,
 					MusicVideoTypes: myListChart.Chart.Song.MusicVideoTypes,
 				},
 				DifficultyType: myListChart.Chart.DifficultyType,
@@ -218,11 +220,15 @@ func (h *MyListHandler) GetMyListChartsByMyListID(ctx context.Context, req *conn
 }
 
 func (h *MyListHandler) GetMyListChartByID(ctx context.Context, req *connect.Request[proto_my_list.GetMyListChartByIDRequest]) (*connect.Response[proto_my_list.GetMyListChartByIDResponse], error) {
+	fmt.Println(req.Msg.GetId())
 	myListChart, err := h.myListUsecase.GetMyListChartByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
+			log.Println("point1")
+			fmt.Printf("%v\n", myListChart)
 			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
 		}
+		log.Println("point2")
 		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
 	}
 	var protoVocalPatterns []*proto_master.VocalPattern
@@ -243,21 +249,21 @@ func (h *MyListHandler) GetMyListChartByID(ctx context.Context, req *connect.Req
 				Name: s.Name,
 			})
 		}
-		var protoUnits []*proto_master.Unit
-		for _, u := range vp.Units {
-			if u == nil {
-				continue
-			}
-			protoUnits = append(protoUnits, &proto_master.Unit{
-				Id:   u.ID,
-				Name: u.Name,
-			})
-		}
 		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 			Id:      vp.ID,
 			Name:    vp.Name,
 			Singers: protoSingers,
-			Units:   protoUnits,
+		})
+	}
+
+	var protoUnits []*proto_master.Unit
+	for _, u := range myListChart.Chart.Song.Units {
+		if u == nil {
+			continue
+		}
+		protoUnits = append(protoUnits, &proto_master.Unit{
+			Id:   u.ID,
+			Name: u.Name,
 		})
 	}
 
@@ -290,6 +296,7 @@ func (h *MyListHandler) GetMyListChartByID(ctx context.Context, req *connect.Req
 				ReleaseTime:     timestamppb.New(myListChart.Chart.Song.ReleaseTime),
 				Deleted:         myListChart.Chart.Song.Deleted,
 				VocalPatterns:   protoVocalPatterns,
+				Units:           protoUnits,
 				MusicVideoTypes: myListChart.Chart.Song.MusicVideoTypes,
 			},
 			DifficultyType: myListChart.Chart.DifficultyType,
@@ -383,21 +390,21 @@ func (h *MyListHandler) GetMyListChartAttachmentsByMyListChartID(ctx context.Con
 				Name: s.Name,
 			})
 		}
-		var protoUnits []*proto_master.Unit
-		for _, u := range vp.Units {
-			if u == nil {
-				continue
-			}
-			protoUnits = append(protoUnits, &proto_master.Unit{
-				Id:   u.ID,
-				Name: u.Name,
-			})
-		}
 		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 			Id:      vp.ID,
 			Name:    vp.Name,
 			Singers: protoSingers,
-			Units:   protoUnits,
+		})
+	}
+
+	var protoUnits []*proto_master.Unit
+	for _, u := range myListChart.Chart.Song.Units {
+		if u == nil {
+			continue
+		}
+		protoUnits = append(protoUnits, &proto_master.Unit{
+			Id:   u.ID,
+			Name: u.Name,
 		})
 	}
 
@@ -430,6 +437,7 @@ func (h *MyListHandler) GetMyListChartAttachmentsByMyListChartID(ctx context.Con
 				ReleaseTime:     timestamppb.New(myListChart.Chart.Song.ReleaseTime),
 				Deleted:         myListChart.Chart.Song.Deleted,
 				VocalPatterns:   protoVocalPatterns,
+				Units:           protoUnits,
 				MusicVideoTypes: myListChart.Chart.Song.MusicVideoTypes,
 			},
 			DifficultyType: myListChart.Chart.DifficultyType,

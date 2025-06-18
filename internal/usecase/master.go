@@ -32,7 +32,7 @@ type MasterUsecase interface {
 	GetUnitByID(ctx context.Context, id int32) (*entity.Unit, error)
 	CreateUnit(ctx context.Context, name string) error
 	// VocalPattern
-	CreateVocalPattern(ctx context.Context, songID int32, name string, singerIDs, singerPositions, unitIDs []int32) error
+	CreateVocalPattern(ctx context.Context, songID int32, name string, singerIDs, singerPositions []int32) error
 	// Song
 	ListSongs(ctx context.Context) ([]*entity.Song, error)
 	GetSongByID(ctx context.Context, id int32) (*entity.Song, error)
@@ -42,6 +42,7 @@ type MasterUsecase interface {
 		lyrics_id, music_id, arrangement_id int32,
 		thumbnail, originalVideo string,
 		releaseTime time.Time, deleted bool,
+		unitIDs []int32,
 		musicVideoTypes []enums.MusicVideoType,
 	) error
 	// Chart
@@ -114,6 +115,17 @@ func (u *masterUsecase) CreateArtist(ctx context.Context, name, kana string) err
 		return errors.WithStack(err)
 	}
 
+	artists, err := u.masterRepo.ListArtists(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if artists == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetArtists(ctx, artists); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
 
@@ -162,6 +174,17 @@ func (u *masterUsecase) GetSingerByID(ctx context.Context, id int32) (*entity.Si
 func (u *masterUsecase) CreateSinger(ctx context.Context, name string) error {
 	_, err := u.masterRepo.CreateSinger(ctx, name)
 	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	singers, err := u.masterRepo.ListSingers(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if singers == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetSingers(ctx, singers); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -216,11 +239,22 @@ func (u *masterUsecase) CreateUnit(ctx context.Context, name string) error {
 		return errors.WithStack(err)
 	}
 
+	units, err := u.masterRepo.ListUnits(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if units == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetUnits(ctx, units); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
 
 // VocalPattern
-func (u *masterUsecase) CreateVocalPattern(ctx context.Context, songID int32, name string, singerIDs, singerPositions, unitIDs []int32) error {
+func (u *masterUsecase) CreateVocalPattern(ctx context.Context, songID int32, name string, singerIDs, singerPositions []int32) error {
 	exist, err := u.masterRepo.ExistsSong(ctx, songID)
 	if err != nil {
 		return errors.WithStack(err)
@@ -231,16 +265,6 @@ func (u *masterUsecase) CreateVocalPattern(ctx context.Context, songID int32, na
 
 	for _, id := range singerIDs {
 		exist, err := u.masterRepo.ExistsSinger(ctx, id)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		if !exist {
-			return errors.WithStack(ErrInvalidArgument)
-		}
-	}
-
-	for _, id := range unitIDs {
-		exist, err := u.masterRepo.ExistsUnit(ctx, id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -261,11 +285,26 @@ func (u *masterUsecase) CreateVocalPattern(ctx context.Context, songID int32, na
 		}
 	}
 
-	for _, unitID := range unitIDs {
-		_, err := u.masterRepo.CreateVocalPatternUnit(ctx, vp.ID, unitID)
-		if err != nil {
-			return errors.WithStack(err)
-		}
+	songs, err := u.masterRepo.ListSongs(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if songs == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetSongs(ctx, songs); err != nil {
+		return errors.WithStack(err)
+	}
+
+	charts, err := u.masterRepo.ListCharts(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if charts == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetCharts(ctx, charts); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -319,6 +358,7 @@ func (u *masterUsecase) CreateSong(
 	lyrics_id, music_id, arrangement_id int32,
 	thumbnail, originalVideo string,
 	releaseTime time.Time, deleted bool,
+	unitIDs []int32,
 	musicVideoTypes []enums.MusicVideoType,
 ) error {
 	lyricsExist, err := u.masterRepo.ExistsArtist(ctx, lyrics_id)
@@ -343,9 +383,26 @@ func (u *masterUsecase) CreateSong(
 		return errors.WithStack(ErrInvalidArgument)
 	}
 
+	for _, id := range unitIDs {
+		exist, err := u.masterRepo.ExistsUnit(ctx, id)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if !exist {
+			return errors.WithStack(ErrInvalidArgument)
+		}
+	}
+
 	s, err := u.masterRepo.CreateSong(ctx, name, kana, lyrics_id, music_id, arrangement_id, thumbnail, originalVideo, releaseTime, deleted)
 	if err != nil {
 		return errors.WithStack(err)
+	}
+
+	for _, unitID := range unitIDs {
+		_, err := u.masterRepo.CreateSongUnit(ctx, s.ID, unitID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
 	for _, musicVideoType := range musicVideoTypes {
@@ -353,6 +410,17 @@ func (u *masterUsecase) CreateSong(
 		if err != nil {
 			return errors.WithStack(err)
 		}
+	}
+
+	songs, err := u.masterRepo.ListSongs(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if songs == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetSongs(ctx, songs); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -413,7 +481,18 @@ func (u *masterUsecase) CreateChart(
 		return errors.WithStack(ErrInvalidArgument)
 	}
 
-	if _, err = u.masterRepo.CreateChart(ctx, songID, difficultyType, level, chartViewLink); err != nil {
+	if _, err := u.masterRepo.CreateChart(ctx, songID, difficultyType, level, chartViewLink); err != nil {
+		return errors.WithStack(err)
+	}
+
+	charts, err := u.masterRepo.ListCharts(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if charts == nil {
+		return nil
+	}
+	if err := u.redisMasterCacheRepo.SetCharts(ctx, charts); err != nil {
 		return errors.WithStack(err)
 	}
 

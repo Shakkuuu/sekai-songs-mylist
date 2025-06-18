@@ -187,7 +187,7 @@ func (h *MasterHandler) CreateVocalPattern(ctx context.Context, req *connect.Req
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(errors.New("singerIDsとsingerPositionの長さが一致していない")))
 	}
 
-	err := h.masterUsecase.CreateVocalPattern(ctx, req.Msg.GetSongId(), req.Msg.GetName(), req.Msg.GetSingerIds(), req.Msg.GetSingerPositions(), req.Msg.GetUnitIds())
+	err := h.masterUsecase.CreateVocalPattern(ctx, req.Msg.GetSongId(), req.Msg.GetName(), req.Msg.GetSingerIds(), req.Msg.GetSingerPositions())
 	if err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
 			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
@@ -215,16 +215,9 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 			if vp == nil {
 				continue
 			}
-			// fmt.Println(vp.Name)
-			// for _, v := range vp.Singers {
-			// 	fmt.Println(*v)
-			// }
 			sort.Slice(vp.Singers, func(i, j int) bool {
 				return vp.Singers[i].Position < vp.Singers[j].Position
 			})
-			// for _, v := range vp.Singers {
-			// 	fmt.Println(*v)
-			// }
 			var protoSingers []*proto_master.Singer
 			for _, s := range vp.Singers {
 				if s == nil {
@@ -235,23 +228,23 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 					Name: s.Name,
 				})
 			}
-			var protoUnits []*proto_master.Unit
-			for _, u := range vp.Units {
-				if u == nil {
-					continue
-				}
-				protoUnits = append(protoUnits, &proto_master.Unit{
-					Id:   u.ID,
-					Name: u.Name,
-				})
-			}
 			protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 				Id:      vp.ID,
 				Name:    vp.Name,
 				Singers: protoSingers,
-				Units:   protoUnits,
 			})
 		}
+		var protoUnits []*proto_master.Unit
+		for _, u := range song.Units {
+			if u == nil {
+				continue
+			}
+			protoUnits = append(protoUnits, &proto_master.Unit{
+				Id:   u.ID,
+				Name: u.Name,
+			})
+		}
+
 		protoSongs = append(protoSongs, &proto_master.Song{
 			Id:   song.ID,
 			Name: song.Name,
@@ -276,6 +269,7 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 			ReleaseTime:     timestamppb.New(song.ReleaseTime),
 			Deleted:         song.Deleted,
 			VocalPatterns:   protoVocalPatterns,
+			Units:           protoUnits,
 			MusicVideoTypes: song.MusicVideoTypes,
 		})
 	}
@@ -310,21 +304,20 @@ func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_
 				Name: s.Name,
 			})
 		}
-		var protoUnits []*proto_master.Unit
-		for _, u := range vp.Units {
-			if u == nil {
-				continue
-			}
-			protoUnits = append(protoUnits, &proto_master.Unit{
-				Id:   u.ID,
-				Name: u.Name,
-			})
-		}
 		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 			Id:      vp.ID,
 			Name:    vp.Name,
 			Singers: protoSingers,
-			Units:   protoUnits,
+		})
+	}
+	var protoUnits []*proto_master.Unit
+	for _, u := range song.Units {
+		if u == nil {
+			continue
+		}
+		protoUnits = append(protoUnits, &proto_master.Unit{
+			Id:   u.ID,
+			Name: u.Name,
 		})
 	}
 	protoSong = &proto_master.Song{
@@ -351,6 +344,7 @@ func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_
 		ReleaseTime:     timestamppb.New(song.ReleaseTime),
 		Deleted:         song.Deleted,
 		VocalPatterns:   protoVocalPatterns,
+		Units:           protoUnits,
 		MusicVideoTypes: song.MusicVideoTypes,
 	}
 
@@ -372,6 +366,7 @@ func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[pro
 		ctx, req.Msg.GetName(), req.Msg.GetKana(),
 		req.Msg.GetLyricsId(), req.Msg.GetMusicId(), req.Msg.GetArrangementId(),
 		req.Msg.GetThumbnail(), req.Msg.GetOriginalVideo(), req.Msg.GetReleaseTime().AsTime(), req.Msg.GetDeleted(),
+		req.Msg.GetUnitIds(),
 		req.Msg.GetMusicVideoTypes(),
 	)
 	if err != nil {
@@ -411,24 +406,23 @@ func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[prot
 					Name: s.Name,
 				})
 			}
-			var protoUnits []*proto_master.Unit
-			for _, u := range vp.Units {
-				if u == nil {
-					continue
-				}
-				protoUnits = append(protoUnits, &proto_master.Unit{
-					Id:   u.ID,
-					Name: u.Name,
-				})
-			}
 			protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 				Id:      vp.ID,
 				Name:    vp.Name,
 				Singers: protoSingers,
-				Units:   protoUnits,
 			})
 		}
 
+		var protoUnits []*proto_master.Unit
+		for _, u := range chart.Song.Units {
+			if u == nil {
+				continue
+			}
+			protoUnits = append(protoUnits, &proto_master.Unit{
+				Id:   u.ID,
+				Name: u.Name,
+			})
+		}
 		protoSong := proto_master.Song{
 			Id:   chart.Song.ID,
 			Name: chart.Song.Name,
@@ -453,6 +447,7 @@ func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[prot
 			ReleaseTime:     timestamppb.New(chart.Song.ReleaseTime),
 			Deleted:         chart.Song.Deleted,
 			VocalPatterns:   protoVocalPatterns,
+			Units:           protoUnits,
 			MusicVideoTypes: chart.Song.MusicVideoTypes,
 		}
 
@@ -497,24 +492,23 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 				Name: s.Name,
 			})
 		}
-		var protoUnits []*proto_master.Unit
-		for _, u := range vp.Units {
-			if u == nil {
-				continue
-			}
-			protoUnits = append(protoUnits, &proto_master.Unit{
-				Id:   u.ID,
-				Name: u.Name,
-			})
-		}
 		protoVocalPatterns = append(protoVocalPatterns, &proto_master.VocalPattern{
 			Id:      vp.ID,
 			Name:    vp.Name,
 			Singers: protoSingers,
-			Units:   protoUnits,
 		})
 	}
 
+	var protoUnits []*proto_master.Unit
+	for _, u := range chart.Song.Units {
+		if u == nil {
+			continue
+		}
+		protoUnits = append(protoUnits, &proto_master.Unit{
+			Id:   u.ID,
+			Name: u.Name,
+		})
+	}
 	protoSong := proto_master.Song{
 		Id:   chart.Song.ID,
 		Name: chart.Song.Name,
@@ -539,6 +533,7 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 		ReleaseTime:     timestamppb.New(chart.Song.ReleaseTime),
 		Deleted:         chart.Song.Deleted,
 		VocalPatterns:   protoVocalPatterns,
+		Units:           protoUnits,
 		MusicVideoTypes: chart.Song.MusicVideoTypes,
 	}
 

@@ -690,11 +690,6 @@ export class CreateVocalPatternRequest extends Message<CreateVocalPatternRequest
    */
   singerPositions: number[] = [];
 
-  /**
-   * @generated from field: repeated int32 unit_ids = 5;
-   */
-  unitIds: number[] = [];
-
   constructor(data?: PartialMessage<CreateVocalPatternRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -707,7 +702,6 @@ export class CreateVocalPatternRequest extends Message<CreateVocalPatternRequest
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "singer_ids", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
     { no: 4, name: "singer_positions", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
-    { no: 5, name: "unit_ids", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateVocalPatternRequest {
@@ -952,7 +946,12 @@ export class CreateSongRequest extends Message<CreateSongRequest> {
   deleted = false;
 
   /**
-   * @generated from field: repeated enums.MusicVideoType music_video_types = 10;
+   * @generated from field: repeated int32 unit_ids = 10;
+   */
+  unitIds: number[] = [];
+
+  /**
+   * @generated from field: repeated enums.MusicVideoType music_video_types = 11;
    */
   musicVideoTypes: MusicVideoType[] = [];
 
@@ -973,7 +972,8 @@ export class CreateSongRequest extends Message<CreateSongRequest> {
     { no: 7, name: "original_video", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 8, name: "release_time", kind: "message", T: Timestamp },
     { no: 9, name: "deleted", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-    { no: 10, name: "music_video_types", kind: "enum", T: proto3.getEnumType(MusicVideoType), repeated: true },
+    { no: 10, name: "unit_ids", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
+    { no: 11, name: "music_video_types", kind: "enum", T: proto3.getEnumType(MusicVideoType), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSongRequest {

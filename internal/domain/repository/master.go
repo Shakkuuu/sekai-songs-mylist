@@ -20,24 +20,24 @@ type MasterRepository interface {
 	// Artist
 	ListArtists(ctx context.Context) ([]*entity.Artist, error)
 	GetArtistByID(ctx context.Context, id int32) (*entity.Artist, error)
-	CreateArtist(ctx context.Context, name, kana string) (*sqlcgen.Artist, error)
+	CreateArtist(ctx context.Context, name, kana string) (*entity.Artist, error)
 	ExistsArtist(ctx context.Context, id int32) (bool, error)
 	// Singer
 	ListSingers(ctx context.Context) ([]*entity.Singer, error)
 	GetSingerByID(ctx context.Context, id int32) (*entity.Singer, error)
-	CreateSinger(ctx context.Context, name string) (*sqlcgen.Singer, error)
+	CreateSinger(ctx context.Context, name string) (*entity.Singer, error)
 	ExistsSinger(ctx context.Context, id int32) (bool, error)
 	// Unit
 	ListUnits(ctx context.Context) ([]*entity.Unit, error)
 	GetUnitByID(ctx context.Context, id int32) (*entity.Unit, error)
-	CreateUnit(ctx context.Context, name string) (*sqlcgen.Unit, error)
+	CreateUnit(ctx context.Context, name string) (*entity.Unit, error)
 	ExistsUnit(ctx context.Context, id int32) (bool, error)
 	// VocalPattern
 	CreateVocalPattern(ctx context.Context, songID int32, name string) (*sqlcgen.VocalPattern, error)
 	// VocalPatternSinger
 	CreateVocalPatternSinger(ctx context.Context, vocalPatternID, singerID, position int32) (*sqlcgen.VocalPatternSinger, error)
-	// VocalPatternUnit
-	CreateVocalPatternUnit(ctx context.Context, vocalPatternID, unitID int32) (*sqlcgen.VocalPatternUnit, error)
+	// SongUnit
+	CreateSongUnit(ctx context.Context, songID, unitID int32) (*sqlcgen.SongUnit, error)
 	// SongMusicVideoType
 	CreateSongMusicVideoType(ctx context.Context, songID int32, musicVideoType enums.MusicVideoType) (*sqlcgen.SongMusicVideoType, error)
 	// Song

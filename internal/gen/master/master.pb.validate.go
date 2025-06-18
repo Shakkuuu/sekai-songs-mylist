@@ -2178,22 +2178,6 @@ func (m *CreateVocalPatternRequest) validate(all bool) error {
 
 	}
 
-	for idx, item := range m.GetUnitIds() {
-		_, _ = idx, item
-
-		if item < 1 {
-			err := CreateVocalPatternRequestValidationError{
-				field:  fmt.Sprintf("UnitIds[%v]", idx),
-				reason: "value must be greater than or equal to 1",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-	}
-
 	if len(errors) > 0 {
 		return CreateVocalPatternRequestMultiError(errors)
 	}
@@ -2952,6 +2936,22 @@ func (m *CreateSongRequest) validate(all bool) error {
 	}
 
 	// no validation rules for Deleted
+
+	for idx, item := range m.GetUnitIds() {
+		_, _ = idx, item
+
+		if item < 1 {
+			err := CreateSongRequestValidationError{
+				field:  fmt.Sprintf("UnitIds[%v]", idx),
+				reason: "value must be greater than or equal to 1",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
 
 	for idx, item := range m.GetMusicVideoTypes() {
 		_, _ = idx, item

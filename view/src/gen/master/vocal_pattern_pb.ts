@@ -6,7 +6,6 @@
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import { Singer } from "./singer_pb.js";
-import { Unit } from "./unit_pb.js";
 
 /**
  * VocalPatterns
@@ -29,11 +28,6 @@ export class VocalPattern extends Message<VocalPattern> {
    */
   singers: Singer[] = [];
 
-  /**
-   * @generated from field: repeated master.Unit units = 4;
-   */
-  units: Unit[] = [];
-
   constructor(data?: PartialMessage<VocalPattern>) {
     super();
     proto3.util.initPartial(data, this);
@@ -45,7 +39,6 @@ export class VocalPattern extends Message<VocalPattern> {
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "singers", kind: "message", T: Singer, repeated: true },
-    { no: 4, name: "units", kind: "message", T: Unit, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): VocalPattern {

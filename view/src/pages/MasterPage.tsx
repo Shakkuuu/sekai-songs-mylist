@@ -9,9 +9,11 @@ import { CreateSong } from "../components/CreateSong";
 import { CreateVocalPattern } from "../components/CreateVocalPattern";
 import { ChartList } from "../components/ListChart";
 import { CreateChart } from "../components/CreateChart";
+import { HamburgerMenu } from "../components/HamburgerMenu";
 
 export const MasterPage = () => (
-  <div>
+  <div className="container">
+    <HamburgerMenu />
     <h1>Sekai Songs Mylist - Master</h1>
     <ArtistList />
     <CreateArtist />

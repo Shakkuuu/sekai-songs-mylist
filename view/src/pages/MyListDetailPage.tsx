@@ -10,6 +10,7 @@ import {
   getDifficultyTypeDisplayName,
   getClearTypeDisplayName,
 } from "../utils/enumDisplay";
+import "./MyListDetailPage.css";
 
 export const MyListDetailPage = () => {
   const { myListId } = useParams();
@@ -25,52 +26,81 @@ export const MyListDetailPage = () => {
   }, [myListId]);
 
   return (
-    <div>
-      <h2>マイリスト詳細</h2>
-      <button onClick={() => navigate(`/mylist/${myListId}/edit`)}>編集</button>
-      <ul>
+    <div className="mylist-detail-container">
+      <div className="mylist-detail-header">
+        <h2>マイリスト詳細</h2>
+        <div className="header-actions">
+          <button className="edit-button" onClick={() => navigate(`/mylist/${myListId}/edit`)}>
+            編集
+          </button>
+          <button className="back-button" onClick={() => navigate("/mylist")}>
+            戻る
+          </button>
+        </div>
+      </div>
+      <div className="chart-list">
         {charts
           .slice()
           .sort((a, b) => (a.chart?.id ?? 0) - (b.chart?.id ?? 0))
           .map((mlc) => (
-            <li key={mlc.id}>
-              <div>楽曲名: {mlc.chart?.song?.name}</div>
-              <div>作詞: {mlc.chart?.song?.lyrics?.name}</div>
-              <div>作曲: {mlc.chart?.song?.music?.name}</div>
-              <div>編曲: {mlc.chart?.song?.arrangement?.name}</div>
-              <div>
-                歌唱:{" "}
-                {mlc.chart?.song?.vocalPatterns
-                  ?.map((vp) => vp.singers?.map((s) => s.name).join(", "))
-                  .join(" / ")}
+            <div key={mlc.id} className="chart-item">
+              <div className="chart-thumbnail">
+                {mlc.chart?.song?.thumbnail ? (
+                  <img
+                    src={
+                      mlc.chart.song.thumbnail.startsWith("http")
+                        ? mlc.chart.song.thumbnail
+                        : `http://localhost:8888${mlc.chart.song.thumbnail}`
+                    }
+                    alt={mlc.chart.song.name}
+                  />
+                ) : (
+                  <div className="no-thumbnail">No Image</div>
+                )}
               </div>
-              <div>
-                譜面:{" "}
-                {mlc.chart?.difficultyType !== undefined
-                  ? getDifficultyTypeDisplayName(mlc.chart.difficultyType)
-                  : ""}{" "}
-                {mlc.chart?.level}
+              <div className="chart-info">
+                <div className="chart-header">
+                  <h3 className="chart-name">{mlc.chart?.song?.name}</h3>
+                  <div className="chart-difficulty">
+                    {getDifficultyTypeDisplayName(mlc.chart?.difficultyType ?? 0)} {mlc.chart?.level}
+                  </div>
+                </div>
+                <p className="chart-creators">
+                  {mlc.chart?.song?.lyrics?.name} / {mlc.chart?.song?.music?.name} / {mlc.chart?.song?.arrangement?.name}
+                </p>
+                <div className="chart-status">
+                  <span className="clear-status">
+                    クリア状況: {getClearTypeDisplayName(mlc.clearType)}
+                  </span>
+                  {mlc.memo && (
+                    <span className="memo">
+                      メモ: {mlc.memo}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div>クリア状況: {getClearTypeDisplayName(mlc.clearType)}</div>
-              <div>メモ: {mlc.memo}</div>
-              <button
-                onClick={() => navigate(`/mylist/${myListId}/chart/${mlc.id}`)}
-              >
-                編集
-              </button>
-              <button
-                onClick={async () => {
-                  await myListClient.deleteMyListChart(
-                    new DeleteMyListChartRequest({ id: mlc.id })
-                  );
-                  setCharts(charts.filter((c) => c.id !== mlc.id));
-                }}
-              >
-                削除
-              </button>
-            </li>
+              <div className="chart-actions">
+                <button
+                  className="edit-button"
+                  onClick={() => navigate(`/mylist/${myListId}/chart/${mlc.id}`)}
+                >
+                  詳細
+                </button>
+                <button
+                  className="delete-button"
+                  onClick={async () => {
+                    await myListClient.deleteMyListChart(
+                      new DeleteMyListChartRequest({ id: mlc.id })
+                    );
+                    setCharts(charts.filter((c) => c.id !== mlc.id));
+                  }}
+                >
+                  削除
+                </button>
+              </div>
+            </div>
           ))}
-      </ul>
+      </div>
     </div>
   );
 };

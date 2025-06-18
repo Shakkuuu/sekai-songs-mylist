@@ -50,7 +50,7 @@ func (r *masterRepository) GetArtistByID(ctx context.Context, id int32) (*entity
 	return sqlToDomainArtist(&artist), nil
 }
 
-func (r *masterRepository) CreateArtist(ctx context.Context, name, kana string) (*sqlcgen.Artist, error) {
+func (r *masterRepository) CreateArtist(ctx context.Context, name, kana string) (*entity.Artist, error) {
 	sqlArtist := sqlcgen.InsertArtistParams{
 		Name: name,
 		Kana: kana,
@@ -60,7 +60,7 @@ func (r *masterRepository) CreateArtist(ctx context.Context, name, kana string) 
 		return nil, errors.WithStack(err)
 	}
 
-	return &a, nil
+	return sqlToDomainArtist(&a), nil
 }
 
 func (r *masterRepository) ExistsArtist(ctx context.Context, id int32) (bool, error) {
@@ -107,13 +107,13 @@ func (r *masterRepository) GetSingerByID(ctx context.Context, id int32) (*entity
 	return sqlToDomainSinger(&singer), nil
 }
 
-func (r *masterRepository) CreateSinger(ctx context.Context, name string) (*sqlcgen.Singer, error) {
+func (r *masterRepository) CreateSinger(ctx context.Context, name string) (*entity.Singer, error) {
 	s, err := r.queries.InsertSinger(ctx, name)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	return &s, nil
+	return sqlToDomainSinger(&s), nil
 }
 
 func (r *masterRepository) ExistsSinger(ctx context.Context, id int32) (bool, error) {
@@ -156,13 +156,13 @@ func (r *masterRepository) GetUnitByID(ctx context.Context, id int32) (*entity.U
 	return sqlToDomainUnit(&unit), nil
 }
 
-func (r *masterRepository) CreateUnit(ctx context.Context, name string) (*sqlcgen.Unit, error) {
+func (r *masterRepository) CreateUnit(ctx context.Context, name string) (*entity.Unit, error) {
 	u, err := r.queries.InsertUnit(ctx, name)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	return &u, nil
+	return sqlToDomainUnit(&u), nil
 }
 
 func (r *masterRepository) ExistsUnit(ctx context.Context, id int32) (bool, error) {
@@ -210,18 +210,18 @@ func (r *masterRepository) CreateVocalPatternSinger(ctx context.Context, vocalPa
 	return &vps, nil
 }
 
-// VocalPatternUnit
-func (r *masterRepository) CreateVocalPatternUnit(ctx context.Context, vocalPatternID, unitID int32) (*sqlcgen.VocalPatternUnit, error) {
-	sqlVocalPatternUnit := sqlcgen.InsertVocalPatternUnitParams{
-		VocalPatternID: sql.NullInt32{Int32: vocalPatternID, Valid: true},
-		UnitID:         sql.NullInt32{Int32: unitID, Valid: true},
+// SongUnit
+func (r *masterRepository) CreateSongUnit(ctx context.Context, songID, unitID int32) (*sqlcgen.SongUnit, error) {
+	sqlSongUnit := sqlcgen.InsertSongUnitParams{
+		SongID: sql.NullInt32{Int32: songID, Valid: true},
+		UnitID: sql.NullInt32{Int32: unitID, Valid: true},
 	}
-	vpu, err := r.queries.InsertVocalPatternUnit(ctx, sqlVocalPatternUnit)
+	su, err := r.queries.InsertSongUnit(ctx, sqlSongUnit)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	return &vpu, nil
+	return &su, nil
 }
 
 // SongMusicVideoType
@@ -340,12 +340,12 @@ func sqlToDomainListSong(sqlSongs []sqlcgen.ListSongWithArtistsRow) []*entity.So
 								Position: v.SingerOrder.Int32,
 							},
 						},
-						Units: []*entity.Unit{
-							{
-								ID:   v.UnitID.Int32,
-								Name: v.UnitName.String,
-							},
-						},
+					},
+				},
+				Units: []*entity.Unit{
+					{
+						ID:   v.UnitID.Int32,
+						Name: v.UnitName.String,
 					},
 				},
 				MusicVideoTypes: []enums.MusicVideoType{
@@ -367,21 +367,21 @@ func sqlToDomainListSong(sqlSongs []sqlcgen.ListSongWithArtistsRow) []*entity.So
 						Position: v.SingerOrder.Int32,
 					})
 				}
-				utFind := slices.ContainsFunc(songs[songIndex].VocalPatterns[vpIndex].Units, func(ut *entity.Unit) bool {
-					return ut.ID == v.UnitID.Int32
-				})
-				if !utFind {
-					songs[songIndex].VocalPatterns[vpIndex].Units = append(songs[songIndex].VocalPatterns[vpIndex].Units, &entity.Unit{
-						ID:   v.UnitID.Int32,
-						Name: v.UnitName.String,
-					})
-				}
 			} else {
 				songs[songIndex].VocalPatterns = append(songs[songIndex].VocalPatterns, &entity.VocalPattern{
 					ID:      v.VocalPatternID.Int32,
 					Name:    v.VocalPatternName.String,
 					Singers: []*entity.Singer{{ID: v.SingerID.Int32, Name: v.SingerName.String, Position: v.SingerOrder.Int32}},
-					Units:   []*entity.Unit{{ID: v.UnitID.Int32, Name: v.UnitName.String}},
+				})
+			}
+
+			utFind := slices.ContainsFunc(songs[songIndex].Units, func(ut *entity.Unit) bool {
+				return ut.ID == v.UnitID.Int32
+			})
+			if !utFind {
+				songs[songIndex].Units = append(songs[songIndex].Units, &entity.Unit{
+					ID:   v.UnitID.Int32,
+					Name: v.UnitName.String,
 				})
 			}
 
@@ -436,12 +436,12 @@ func sqlToDomainGetSong(sqlSongs []sqlcgen.GetSongDetailsByIDRow) []*entity.Song
 								Position: v.SingerOrder.Int32,
 							},
 						},
-						Units: []*entity.Unit{
-							{
-								ID:   v.UnitID.Int32,
-								Name: v.UnitName.String,
-							},
-						},
+					},
+				},
+				Units: []*entity.Unit{
+					{
+						ID:   v.UnitID.Int32,
+						Name: v.UnitName.String,
 					},
 				},
 				MusicVideoTypes: []enums.MusicVideoType{
@@ -463,21 +463,21 @@ func sqlToDomainGetSong(sqlSongs []sqlcgen.GetSongDetailsByIDRow) []*entity.Song
 						Position: v.SingerOrder.Int32,
 					})
 				}
-				utFind := slices.ContainsFunc(songs[songIndex].VocalPatterns[vpIndex].Units, func(ut *entity.Unit) bool {
-					return ut.ID == v.UnitID.Int32
-				})
-				if !utFind {
-					songs[songIndex].VocalPatterns[vpIndex].Units = append(songs[songIndex].VocalPatterns[vpIndex].Units, &entity.Unit{
-						ID:   v.UnitID.Int32,
-						Name: v.UnitName.String,
-					})
-				}
 			} else {
 				songs[songIndex].VocalPatterns = append(songs[songIndex].VocalPatterns, &entity.VocalPattern{
 					ID:      v.VocalPatternID.Int32,
 					Name:    v.VocalPatternName.String,
 					Singers: []*entity.Singer{{ID: v.SingerID.Int32, Name: v.SingerName.String, Position: v.SingerOrder.Int32}},
-					Units:   []*entity.Unit{{ID: v.UnitID.Int32, Name: v.UnitName.String}},
+				})
+			}
+
+			utFind := slices.ContainsFunc(songs[songIndex].Units, func(ut *entity.Unit) bool {
+				return ut.ID == v.UnitID.Int32
+			})
+			if !utFind {
+				songs[songIndex].Units = append(songs[songIndex].Units, &entity.Unit{
+					ID:   v.UnitID.Int32,
+					Name: v.UnitName.String,
 				})
 			}
 
@@ -585,12 +585,12 @@ func sqlToDomainListChart(sqlCharts []sqlcgen.ListChartWithSongWithArtistsRow) [
 									Position: v.SingerOrder.Int32,
 								},
 							},
-							Units: []*entity.Unit{
-								{
-									ID:   v.UnitID.Int32,
-									Name: v.UnitName.String,
-								},
-							},
+						},
+					},
+					Units: []*entity.Unit{
+						{
+							ID:   v.UnitID.Int32,
+							Name: v.UnitName.String,
 						},
 					},
 					MusicVideoTypes: []enums.MusicVideoType{
@@ -616,21 +616,21 @@ func sqlToDomainListChart(sqlCharts []sqlcgen.ListChartWithSongWithArtistsRow) [
 						Position: v.SingerOrder.Int32,
 					})
 				}
-				utFind := slices.ContainsFunc(charts[chartIndex].Song.VocalPatterns[vpIndex].Units, func(ut *entity.Unit) bool {
-					return ut.ID == v.UnitID.Int32
-				})
-				if !utFind {
-					charts[chartIndex].Song.VocalPatterns[vpIndex].Units = append(charts[chartIndex].Song.VocalPatterns[vpIndex].Units, &entity.Unit{
-						ID:   v.UnitID.Int32,
-						Name: v.UnitName.String,
-					})
-				}
 			} else {
 				charts[chartIndex].Song.VocalPatterns = append(charts[chartIndex].Song.VocalPatterns, &entity.VocalPattern{
 					ID:      v.VocalPatternID.Int32,
 					Name:    v.VocalPatternName.String,
 					Singers: []*entity.Singer{{ID: v.SingerID.Int32, Name: v.SingerName.String, Position: v.SingerOrder.Int32}},
-					Units:   []*entity.Unit{{ID: v.UnitID.Int32, Name: v.UnitName.String}},
+				})
+			}
+
+			utFind := slices.ContainsFunc(charts[chartIndex].Song.Units, func(ut *entity.Unit) bool {
+				return ut.ID == v.UnitID.Int32
+			})
+			if !utFind {
+				charts[chartIndex].Song.Units = append(charts[chartIndex].Song.Units, &entity.Unit{
+					ID:   v.UnitID.Int32,
+					Name: v.UnitName.String,
 				})
 			}
 
@@ -687,12 +687,12 @@ func sqlToDomainGetChart(sqlCharts []sqlcgen.GetChartWithSongWithArtistsByIDRow)
 									Position: v.SingerOrder.Int32,
 								},
 							},
-							Units: []*entity.Unit{
-								{
-									ID:   v.UnitID.Int32,
-									Name: v.UnitName.String,
-								},
-							},
+						},
+					},
+					Units: []*entity.Unit{
+						{
+							ID:   v.UnitID.Int32,
+							Name: v.UnitName.String,
 						},
 					},
 					MusicVideoTypes: []enums.MusicVideoType{
@@ -718,21 +718,21 @@ func sqlToDomainGetChart(sqlCharts []sqlcgen.GetChartWithSongWithArtistsByIDRow)
 						Position: v.SingerOrder.Int32,
 					})
 				}
-				utFind := slices.ContainsFunc(charts[chartIndex].Song.VocalPatterns[vpIndex].Units, func(ut *entity.Unit) bool {
-					return ut.ID == v.UnitID.Int32
-				})
-				if !utFind {
-					charts[chartIndex].Song.VocalPatterns[vpIndex].Units = append(charts[chartIndex].Song.VocalPatterns[vpIndex].Units, &entity.Unit{
-						ID:   v.UnitID.Int32,
-						Name: v.UnitName.String,
-					})
-				}
 			} else {
 				charts[chartIndex].Song.VocalPatterns = append(charts[chartIndex].Song.VocalPatterns, &entity.VocalPattern{
 					ID:      v.VocalPatternID.Int32,
 					Name:    v.VocalPatternName.String,
 					Singers: []*entity.Singer{{ID: v.SingerID.Int32, Name: v.SingerName.String, Position: v.SingerOrder.Int32}},
-					Units:   []*entity.Unit{{ID: v.UnitID.Int32, Name: v.UnitName.String}},
+				})
+			}
+
+			utFind := slices.ContainsFunc(charts[chartIndex].Song.Units, func(ut *entity.Unit) bool {
+				return ut.ID == v.UnitID.Int32
+			})
+			if !utFind {
+				charts[chartIndex].Song.Units = append(charts[chartIndex].Song.Units, &entity.Unit{
+					ID:   v.UnitID.Int32,
+					Name: v.UnitName.String,
 				})
 			}
 

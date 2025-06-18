@@ -93,7 +93,6 @@ message CreateVocalPatternRequest {
   }];
   repeated int32 singer_ids = 3 [(validate.rules).repeated.items.int32.gte = 1];
   repeated int32 singer_positions = 4 [(validate.rules).repeated.items.int32.gte = 1];
-  repeated int32 unit_ids = 5 [(validate.rules).repeated.items.int32.gte = 1];
 }
 message CreateVocalPatternResponse {}
 
@@ -124,7 +123,8 @@ message CreateSongRequest {
   string original_video = 7 [(validate.rules).string.min_len = 1];
   google.protobuf.Timestamp release_time = 8 [(validate.rules).timestamp.required = true];
   bool deleted = 9;
-  repeated enums.MusicVideoType music_video_types = 10 [(validate.rules).repeated.items.enum.defined_only = true];
+  repeated int32 unit_ids = 10 [(validate.rules).repeated.items.int32.gte = 1];
+  repeated enums.MusicVideoType music_video_types = 11 [(validate.rules).repeated.items.enum.defined_only = true];
 }
 message CreateSongResponse {}
 

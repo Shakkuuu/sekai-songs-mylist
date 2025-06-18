@@ -7,6 +7,7 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3, Timestamp } from "@bufbuild/protobuf";
 import { Artist } from "./artist_pb.js";
 import { VocalPattern } from "./vocal_pattern_pb.js";
+import { Unit } from "./unit_pb.js";
 import { MusicVideoType } from "../enums/master_pb.js";
 
 /**
@@ -71,7 +72,12 @@ export class Song extends Message<Song> {
   vocalPatterns: VocalPattern[] = [];
 
   /**
-   * @generated from field: repeated enums.MusicVideoType music_video_types = 12;
+   * @generated from field: repeated master.Unit units = 12;
+   */
+  units: Unit[] = [];
+
+  /**
+   * @generated from field: repeated enums.MusicVideoType music_video_types = 13;
    */
   musicVideoTypes: MusicVideoType[] = [];
 
@@ -94,7 +100,8 @@ export class Song extends Message<Song> {
     { no: 9, name: "release_time", kind: "message", T: Timestamp },
     { no: 10, name: "deleted", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 11, name: "vocal_patterns", kind: "message", T: VocalPattern, repeated: true },
-    { no: 12, name: "music_video_types", kind: "enum", T: proto3.getEnumType(MusicVideoType), repeated: true },
+    { no: 12, name: "units", kind: "message", T: Unit, repeated: true },
+    { no: 13, name: "music_video_types", kind: "enum", T: proto3.getEnumType(MusicVideoType), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Song {

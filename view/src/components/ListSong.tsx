@@ -1,11 +1,40 @@
 import { useEffect, useState } from "react";
 import { masterClient } from "../lib/grpcClient";
 import { Song } from "../gen/master/song_pb";
-import { getMusicVideoTypeDisplayName } from "../utils/enumDisplay";
+import "./ListSong.css";
 
+interface SongDetailModalProps {
+  song: Song;
+  onClose: () => void;
+}
+
+const SongDetailModal = ({ song, onClose }: SongDetailModalProps) => {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        <h3>{song.name}</h3>
+        <div className="modal-details">
+          <p><strong>原曲MV:</strong> <a href={song.originalVideo} target="_blank" rel="noopener noreferrer">{song.originalVideo}</a></p>
+          <p><strong>リリース時間:</strong> {song.releaseTime?.toDate().toLocaleString()}</p>
+          <p><strong>ボーカルパターン:</strong></p>
+          <ul>
+            {song.vocalPatterns?.map((pattern, index) => (
+              <li key={index}>
+                {pattern.name} - {pattern.singers?.map(singer => singer.name).join(", ")}
+              </li>
+            ))}
+          </ul>
+          <p><strong>ユニット:</strong> {song.units?.map(unit => unit.name).join(", ")}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const SongList = () => {
   const [songs, setSongs] = useState<Song[]>([]);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -16,45 +45,47 @@ export const SongList = () => {
     fetchSongs().catch(console.error);
   }, []);
 
-  console.log(songs);
-
   return (
-    <div>
+    <div className="song-list-container">
       <h2>楽曲一覧</h2>
-      <ul>
+      <div className="song-list">
         {songs.map((song) => (
-          <li key={song.id}>
-            <p><strong>ID:</strong> {song.id}</p>
-            <p><strong>Name:</strong> {song.name}</p>
-            <p><strong>Kana:</strong> {song.kana}</p>
-            <p><strong>Lyrics:</strong> {song.lyrics?.name}</p>
-            <p><strong>Music:</strong> {song.music?.name}</p>
-            <p><strong>Arrangement:</strong> {song.arrangement?.name}</p>
-            <p><strong>Thumbnail:</strong> {song.thumbnail}</p>
-            <p><strong>OriginalVideo:</strong> {song.originalVideo}</p>
-            <p><strong>Deleted:</strong> {song.deleted ? "Yes" : "No"}</p>
-            <p><strong>Release Time:</strong> {song.releaseTime?.toDate().toLocaleString()}</p>
-            <p><strong>Vocal Patterns:</strong></p>
-            {song.vocalPatterns && song.vocalPatterns.length > 0 && (
-              <ul>
-                {song.vocalPatterns.map((pattern, index) => (
-                  <li key={index}>
-                    <p><strong>Name:</strong> {pattern.name}</p>
-                    <p><strong>Singers:</strong> {pattern.singers?.map(singer => singer.name).join(", ")}</p>
-                    <p><strong>Units:</strong> {pattern.units?.map(unit => unit.name).join(", ")}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p><strong>Music Video Types:</strong></p>
-            <ul>
-                {song.musicVideoTypes.map((type) =>
-                    getMusicVideoTypeDisplayName(type)
-                ).join(", ")}
-            </ul>
-          </li>
+          <div key={song.id} className="song-item">
+            <div className="song-thumbnail">
+              {song.thumbnail ? (
+                <img
+                  src={
+                    song.thumbnail.startsWith("http")
+                      ? song.thumbnail
+                      : `http://localhost:8888${song.thumbnail}`
+                  }
+                  alt={song.name}
+                />
+              ) : (
+                <div className="no-thumbnail">No Image</div>
+              )}
+            </div>
+            <div className="song-info">
+              <h3 className="song-name">{song.name}</h3>
+              <p className="song-creators">
+                {song.lyrics?.name} / {song.music?.name} / {song.arrangement?.name}
+              </p>
+            </div>
+            <button
+              className="detail-button"
+              onClick={() => setSelectedSong(song)}
+            >
+              詳細
+            </button>
+          </div>
         ))}
-      </ul>
+      </div>
+      {selectedSong && (
+        <SongDetailModal
+          song={selectedSong}
+          onClose={() => setSelectedSong(null)}
+        />
+      )}
     </div>
   );
 };

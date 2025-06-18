@@ -48,9 +48,9 @@ CREATE TABLE vocal_pattern_singers (
     position INT
 );
 
-CREATE TABLE vocal_pattern_units (
+CREATE TABLE song_units (
     id SERIAL PRIMARY KEY,
-    vocal_pattern_id INT REFERENCES vocal_patterns(id),
+    song_id INT REFERENCES songs(id),
     unit_id INT REFERENCES units(id)
 );
 

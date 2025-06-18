@@ -21,6 +21,17 @@
 
 - 生成したコードをそのままリモートに上げてるけど、ちゃんとどのローカルでも生成できるようにした方が良さそうだよナー
 - テスト書く
+- フロント綺麗にする
+- masterデータ作成
+  - masterデータはv999.999.999_n_hoge-data.up.sqlで管理
+  - dumpではmasterのデータはとりたくない
+  - thumbnailの画像やmy_list_chart_attachmentsのfile_urlの画像とか動画は別のローカルサーバーを立てておく
+  - そこにアップロードしてそこへのURLをDBに保存
+  - CreateSongの時にフロントがそこにPostでファイルをアップロードして、そのレスポンスのURLをバックエンドにTEXTで送ってDBに保存
+  - アタッチメントのfile_urlも同様
+  - thumbnailを表示するところは文字列じゃなくて画像を表示するように修正
+- ユーザー作成時にメールでメールアドレス認証
+- Masterページにアクセスできる管理者権限。どうやってその人だけ可能にするか。UserにisAdminを追加して、Adminのメアドリストをどこかで読み込ませるとか
 
 - export PATH="$(pwd)/../../view/node_modules/.bin:$PATH"
 - buf generate

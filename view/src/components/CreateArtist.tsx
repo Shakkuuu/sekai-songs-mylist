@@ -13,6 +13,7 @@ export const CreateArtist = () => {
       alert("アーティストを作成しました！");
       setName("");
       setKana("");
+      window.location.reload();
     } catch (error) {
       if (
         error instanceof ConnectError ||

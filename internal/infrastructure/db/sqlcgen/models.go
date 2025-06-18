@@ -76,6 +76,12 @@ type SongMusicVideoType struct {
 	MusicVideoType sql.NullInt32
 }
 
+type SongUnit struct {
+	ID     int32
+	SongID sql.NullInt32
+	UnitID sql.NullInt32
+}
+
 type Unit struct {
 	ID   int32
 	Name string
@@ -101,10 +107,4 @@ type VocalPatternSinger struct {
 	VocalPatternID sql.NullInt32
 	SingerID       sql.NullInt32
 	Position       sql.NullInt32
-}
-
-type VocalPatternUnit struct {
-	ID             int32
-	VocalPatternID sql.NullInt32
-	UnitID         sql.NullInt32
 }
