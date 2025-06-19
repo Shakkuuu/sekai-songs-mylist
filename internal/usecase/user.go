@@ -20,6 +20,7 @@ var (
 
 type UserUsecase interface {
 	UserInfo(ctx context.Context, id string) (*entity.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 	ChangeEmail(ctx context.Context, id, email string) (*entity.User, error)
 	ChangePassword(ctx context.Context, id, oldPassword, newPassword string) (*entity.User, error)
 	DeleteUser(ctx context.Context, id string) error
@@ -54,6 +55,15 @@ func (u *userUsecase) UserInfo(ctx context.Context, id string) (*entity.User, er
 	}
 
 	user, err := u.userRepo.GetUserByID(ctx, parsedID)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return user, nil
+}
+
+func (u *userUsecase) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user, err := u.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

@@ -47,7 +47,10 @@ export const MyListEditPage = () => {
     <div className="mylist-edit-container">
       <div className="mylist-edit-header">
         <h2>譜面追加</h2>
-        <button className="back-button" onClick={() => navigate(`/mylist/${myListId}`)}>
+        <button
+          className="back-button"
+          onClick={() => navigate(`/mylist/${myListId}`)}
+        >
           編集終了
         </button>
       </div>
@@ -55,15 +58,9 @@ export const MyListEditPage = () => {
         {charts.map((chart) => (
           <div key={chart.id} className="chart-item">
             <div className="chart-thumbnail">
-              {chart.song?.thumbnail ? (
-                <img
-                  src={
-                    chart.song.thumbnail.startsWith("http")
-                      ? chart.song.thumbnail
-                      : `http://localhost:8888${chart.song.thumbnail}`
-                  }
-                  alt={chart.song.name}
-                />
+              {chart.song?.thumbnail &&
+              chart.song.thumbnail.startsWith("http") ? (
+                <img src={chart.song.thumbnail} alt={chart.song.name} />
               ) : (
                 <div className="no-thumbnail">No Image</div>
               )}
@@ -72,11 +69,13 @@ export const MyListEditPage = () => {
               <div className="chart-header">
                 <h3 className="chart-name">{chart.song?.name}</h3>
                 <div className="chart-difficulty">
-                  {getDifficultyTypeDisplayName(chart.difficultyType)} {chart.level}
+                  {getDifficultyTypeDisplayName(chart.difficultyType)}{" "}
+                  {chart.level}
                 </div>
               </div>
               <p className="chart-creators">
-                {chart.song?.lyrics?.name} / {chart.song?.music?.name} / {chart.song?.arrangement?.name}
+                {chart.song?.lyrics?.name} / {chart.song?.music?.name} /{" "}
+                {chart.song?.arrangement?.name}
               </p>
             </div>
             <div className="chart-actions">

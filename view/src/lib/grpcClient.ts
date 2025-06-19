@@ -4,6 +4,7 @@ import { AuthService } from "../gen/auth/v1/auth_connect";
 import { UserService } from "../gen/user/v1/user_connect";
 import { MyListService } from "../gen/mylist/v1/mylist_connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
+import { API_BASE_URL } from "./constants";
 
 // エラー型の定義
 
@@ -35,11 +36,11 @@ const authMiddleware: Interceptor = (next) => async (req) => {
 };
 
 const defaultTransport = createConnectTransport({
-  baseUrl: "http://localhost:8080",
+  baseUrl: API_BASE_URL,
 });
 
 const authTransport = createConnectTransport({
-  baseUrl: "http://localhost:8080",
+  baseUrl: API_BASE_URL,
   interceptors: [authMiddleware],
 });
 

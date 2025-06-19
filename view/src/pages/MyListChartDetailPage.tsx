@@ -12,6 +12,7 @@ import {
 import { AttachmentType, ClearType } from "../gen/enums/mylist_pb";
 import { getDifficultyTypeDisplayName } from "../utils/enumDisplay";
 import "./MyListChartDetailPage.css";
+import { IMAGE_BASE_URL } from "../lib/constants";
 
 const ATTACHMENT_TYPE_LABELS: Record<AttachmentType, string> = {
   [AttachmentType.UNSPECIFIED]: "未指定",
@@ -36,26 +37,66 @@ const ChartDetailModal = ({ chart, onClose }: ChartDetailModalProps) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
+        <button className="modal-close" onClick={onClose}>
+          ×
+        </button>
         <h3>{chart.chart?.song?.name}</h3>
         <div className="modal-details">
-          <p><strong>難易度:</strong> {getDifficultyTypeDisplayName(chart.chart?.difficultyType ?? 0)}</p>
-          <p><strong>レベル:</strong> {chart.chart?.level}</p>
-          <p><strong>譜面ビュー:</strong> <a href={chart.chart?.chartViewLink} target="_blank" rel="noopener noreferrer">{chart.chart?.chartViewLink}</a></p>
-          <p><strong>作詞:</strong> {chart.chart?.song?.lyrics?.name}</p>
-          <p><strong>作曲:</strong> {chart.chart?.song?.music?.name}</p>
-          <p><strong>編曲:</strong> {chart.chart?.song?.arrangement?.name}</p>
-          <p><strong>リリース時間:</strong> {chart.chart?.song?.releaseTime?.toDate().toLocaleString()}</p>
-          <p><strong>原曲MV:</strong> <a href={chart.chart?.song?.originalVideo} target="_blank" rel="noopener noreferrer">{chart.chart?.song?.originalVideo}</a></p>
-          <p><strong>ボーカルパターン:</strong></p>
+          <p>
+            <strong>難易度:</strong>{" "}
+            {getDifficultyTypeDisplayName(chart.chart?.difficultyType ?? 0)}
+          </p>
+          <p>
+            <strong>レベル:</strong> {chart.chart?.level}
+          </p>
+          <p>
+            <strong>譜面ビュー:</strong>{" "}
+            <a
+              href={chart.chart?.chartViewLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {chart.chart?.chartViewLink}
+            </a>
+          </p>
+          <p>
+            <strong>作詞:</strong> {chart.chart?.song?.lyrics?.name}
+          </p>
+          <p>
+            <strong>作曲:</strong> {chart.chart?.song?.music?.name}
+          </p>
+          <p>
+            <strong>編曲:</strong> {chart.chart?.song?.arrangement?.name}
+          </p>
+          <p>
+            <strong>リリース時間:</strong>{" "}
+            {chart.chart?.song?.releaseTime?.toDate().toLocaleString()}
+          </p>
+          <p>
+            <strong>原曲MV:</strong>{" "}
+            <a
+              href={chart.chart?.song?.originalVideo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {chart.chart?.song?.originalVideo}
+            </a>
+          </p>
+          <p>
+            <strong>ボーカルパターン:</strong>
+          </p>
           <ul>
             {chart.chart?.song?.vocalPatterns?.map((pattern, index) => (
               <li key={index}>
-                {pattern.name} - {pattern.singers?.map(singer => singer.name).join(", ")}
+                {pattern.name} -{" "}
+                {pattern.singers?.map((singer) => singer.name).join(", ")}
               </li>
             ))}
           </ul>
-          <p><strong>ユニット:</strong> {chart.chart?.song?.units?.map(unit => unit.name).join(", ")}</p>
+          <p>
+            <strong>ユニット:</strong>{" "}
+            {chart.chart?.song?.units?.map((unit) => unit.name).join(", ")}
+          </p>
         </div>
       </div>
     </div>
@@ -64,7 +105,6 @@ const ChartDetailModal = ({ chart, onClose }: ChartDetailModalProps) => {
 
 export const MyListChartDetailPage = () => {
   const { myListId, myListChartId } = useParams();
-  console.log("myListChartId:", myListChartId); // デバッグ用
   const [chart, setChart] = useState<MyListChart | null>(null);
   const [clearType, setClearType] = useState<ClearType | undefined>(undefined);
   const [memo, setMemo] = useState("");
@@ -92,7 +132,9 @@ export const MyListChartDetailPage = () => {
   useEffect(() => {
     console.log(myListChartId);
     myListClient
-      .getMyListChartByID(new GetMyListChartByIDRequest({ id: Number(myListChartId) }))
+      .getMyListChartByID(
+        new GetMyListChartByIDRequest({ id: Number(myListChartId) })
+      )
       .then((res) => {
         if (res.myListChart) {
           setChart(res.myListChart);
@@ -116,7 +158,7 @@ export const MyListChartDetailPage = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:8888/upload/attachment", {
+      const res = await fetch(IMAGE_BASE_URL + "/upload/attachment", {
         method: "POST",
         body: formData,
       });
@@ -161,7 +203,7 @@ export const MyListChartDetailPage = () => {
         : att.fileUrl;
       const fileName = fileUrl.split("/").pop();
       if (fileName) {
-        fetch(`http://localhost:8888/delete/attachment/${fileName}`, {
+        fetch(IMAGE_BASE_URL + `/delete/attachment/${fileName}`, {
           method: "DELETE",
         }).catch((err) => {
           console.warn("ファイルサーバーでの削除に失敗:", err);
@@ -174,7 +216,7 @@ export const MyListChartDetailPage = () => {
   const renderAttachmentMedia = (att: MyListChartAttachment) => {
     const url = att.fileUrl.startsWith("http")
       ? att.fileUrl
-      : `http://localhost:8888${att.fileUrl}`;
+      : IMAGE_BASE_URL + `${att.fileUrl}`;
     if (att.attachmentType === AttachmentType.PICTURE) {
       return (
         <img
@@ -225,7 +267,10 @@ export const MyListChartDetailPage = () => {
           <button className="save-button" onClick={handleSave}>
             保存
           </button>
-          <button className="back-button" onClick={() => navigate(`/mylist/${myListId}`)}>
+          <button
+            className="back-button"
+            onClick={() => navigate(`/mylist/${myListId}`)}
+          >
             戻る
           </button>
         </div>
@@ -237,7 +282,7 @@ export const MyListChartDetailPage = () => {
               src={
                 chart.chart.song.thumbnail.startsWith("http")
                   ? chart.chart.song.thumbnail
-                  : `http://localhost:8888${chart.chart.song.thumbnail}`
+                  : IMAGE_BASE_URL + `${chart.chart.song.thumbnail}`
               }
               alt={chart.chart.song.name}
             />
@@ -249,7 +294,8 @@ export const MyListChartDetailPage = () => {
           <div className="chart-header">
             <h3 className="chart-name">{chart.chart?.song?.name}</h3>
             <div className="chart-difficulty">
-              {getDifficultyTypeDisplayName(chart.chart?.difficultyType ?? 0)} {chart.chart?.level}
+              {getDifficultyTypeDisplayName(chart.chart?.difficultyType ?? 0)}{" "}
+              {chart.chart?.level}
             </div>
           </div>
           <div className="chart-creators">
@@ -275,7 +321,9 @@ export const MyListChartDetailPage = () => {
               value={clearType === undefined ? "" : clearType}
               onChange={(e) => {
                 const value = e.target.value;
-                setClearType(value === "" ? undefined : (Number(value) as ClearType));
+                setClearType(
+                  value === "" ? undefined : (Number(value) as ClearType)
+                );
               }}
             >
               {clearTypeOptions.map((opt) => (
@@ -303,7 +351,8 @@ export const MyListChartDetailPage = () => {
             <li key={att.id}>
               <span>
                 [
-                {ATTACHMENT_TYPE_LABELS[att.attachmentType] ?? att.attachmentType}
+                {ATTACHMENT_TYPE_LABELS[att.attachmentType] ??
+                  att.attachmentType}
                 ]
               </span>{" "}
               {renderAttachmentMedia(att)}

@@ -28,8 +28,9 @@ func NewMasterHandler(masterUsecase usecase.MasterUsecase) *MasterHandler {
 func (h *MasterHandler) GetArtists(ctx context.Context, req *connect.Request[proto_master.GetArtistsRequest]) (*connect.Response[proto_master.GetArtistsResponse], error) {
 	artists, err := h.masterUsecase.ListArtists(ctx)
 	if err != nil {
-		log.Println(errors.GetReportableStackTrace(err))
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoArtists := make([]*proto_master.Artist, len(artists))
@@ -50,9 +51,13 @@ func (h *MasterHandler) GetArtist(ctx context.Context, req *connect.Request[prot
 	artist, err := h.masterUsecase.GetArtistByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.GetArtistResponse{
@@ -66,12 +71,16 @@ func (h *MasterHandler) GetArtist(ctx context.Context, req *connect.Request[prot
 
 func (h *MasterHandler) CreateArtist(ctx context.Context, req *connect.Request[proto_master.CreateArtistRequest]) (*connect.Response[proto_master.CreateArtistResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateArtist(ctx, req.Msg.GetName(), req.Msg.GetKana())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateArtistResponse{}), nil
@@ -81,7 +90,9 @@ func (h *MasterHandler) CreateArtist(ctx context.Context, req *connect.Request[p
 func (h *MasterHandler) GetSingers(ctx context.Context, req *connect.Request[proto_master.GetSingersRequest]) (*connect.Response[proto_master.GetSingersResponse], error) {
 	singers, err := h.masterUsecase.ListSingers(ctx)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoSingers := make([]*proto_master.Singer, len(singers))
@@ -101,9 +112,13 @@ func (h *MasterHandler) GetSinger(ctx context.Context, req *connect.Request[prot
 	singer, err := h.masterUsecase.GetSingerByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.GetSingerResponse{
@@ -116,12 +131,16 @@ func (h *MasterHandler) GetSinger(ctx context.Context, req *connect.Request[prot
 
 func (h *MasterHandler) CreateSinger(ctx context.Context, req *connect.Request[proto_master.CreateSingerRequest]) (*connect.Response[proto_master.CreateSingerResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateSinger(ctx, req.Msg.GetName())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateSingerResponse{}), nil
@@ -131,7 +150,9 @@ func (h *MasterHandler) CreateSinger(ctx context.Context, req *connect.Request[p
 func (h *MasterHandler) GetUnits(ctx context.Context, req *connect.Request[proto_master.GetUnitsRequest]) (*connect.Response[proto_master.GetUnitsResponse], error) {
 	units, err := h.masterUsecase.ListUnits(ctx)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoUnits := make([]*proto_master.Unit, len(units))
@@ -151,9 +172,13 @@ func (h *MasterHandler) GetUnit(ctx context.Context, req *connect.Request[proto_
 	unit, err := h.masterUsecase.GetUnitByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.GetUnitResponse{
@@ -166,12 +191,16 @@ func (h *MasterHandler) GetUnit(ctx context.Context, req *connect.Request[proto_
 
 func (h *MasterHandler) CreateUnit(ctx context.Context, req *connect.Request[proto_master.CreateUnitRequest]) (*connect.Response[proto_master.CreateUnitResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateUnit(ctx, req.Msg.GetName())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateUnitResponse{}), nil
@@ -180,19 +209,28 @@ func (h *MasterHandler) CreateUnit(ctx context.Context, req *connect.Request[pro
 // VocalPattern
 func (h *MasterHandler) CreateVocalPattern(ctx context.Context, req *connect.Request[proto_master.CreateVocalPatternRequest]) (*connect.Response[proto_master.CreateVocalPatternResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	if len(req.Msg.GetSingerIds()) != len(req.Msg.GetSingerPositions()) {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(errors.New("singerIDsとsingerPositionの長さが一致していない")))
+		err := errors.New("singerIDsとsingerPositionの長さが一致していない")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateVocalPattern(ctx, req.Msg.GetSongId(), req.Msg.GetName(), req.Msg.GetSingerIds(), req.Msg.GetSingerPositions())
 	if err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateVocalPatternResponse{}), nil
@@ -203,9 +241,13 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 	songs, err := h.masterUsecase.ListSongs(ctx)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	var protoSongs []*proto_master.Song
@@ -282,7 +324,9 @@ func (h *MasterHandler) GetSongs(ctx context.Context, req *connect.Request[proto
 func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_master.GetSongRequest]) (*connect.Response[proto_master.GetSongResponse], error) {
 	song, err := h.masterUsecase.GetSongByID(ctx, req.Msg.GetId())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	var protoSong *proto_master.Song
@@ -355,11 +399,16 @@ func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_
 
 func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[proto_master.CreateSongRequest]) (*connect.Response[proto_master.CreateSongResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	if req.Msg.GetReleaseTime() == nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(errors.New("ReleaseTime can not nil")))
+		err := errors.New("ReleaseTime can not nil")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateSong(
@@ -371,9 +420,13 @@ func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[pro
 	)
 	if err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateSongResponse{}), nil
@@ -383,7 +436,9 @@ func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[pro
 func (h *MasterHandler) GetCharts(ctx context.Context, req *connect.Request[proto_master.GetChartsRequest]) (*connect.Response[proto_master.GetChartsResponse], error) {
 	charts, err := h.masterUsecase.ListCharts(ctx)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	var protoCharts []*proto_master.Chart
@@ -468,9 +523,13 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 	chart, err := h.masterUsecase.GetChartByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	var protoChart *proto_master.Chart
@@ -551,7 +610,9 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 }
 func (h *MasterHandler) CreateChart(ctx context.Context, req *connect.Request[proto_master.CreateChartRequest]) (*connect.Response[proto_master.CreateChartResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.masterUsecase.CreateChart(
@@ -559,9 +620,13 @@ func (h *MasterHandler) CreateChart(ctx context.Context, req *connect.Request[pr
 	)
 	if err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_master.CreateChartResponse{}), nil

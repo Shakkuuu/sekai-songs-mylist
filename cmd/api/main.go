@@ -19,21 +19,22 @@ import (
 	proto_master_connect "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master/masterconnect"
 	proto_my_list_connect "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/mylist/v1/mylistv1connect"
 	proto_user_connect "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/user/v1/userv1connect"
-	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/auth"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/db"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/redis"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/handler"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/repository"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/mail"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 )
 
 func main() {
 	cfg, err := config.NewConfig()
 	if errors.Is(err, os.ErrNotExist) {
-		log.Printf("error Config not found: %v", errors.GetReportableStackTrace(err))
+		log.Printf("error Config not found: \n%+v\n", err)
 		os.Exit(1)
 	} else if err != nil {
-		log.Printf("error Failed to load config: %v", errors.GetReportableStackTrace(err))
+		log.Printf("error Failed to load config: \n%+v\n", err)
 		os.Exit(1)
 	}
 
@@ -47,7 +48,7 @@ func main() {
 
 	dbConn, queries, err := db.Init(dbConfig)
 	if err != nil {
-		log.Printf("Failed to initialize database: %v", errors.GetReportableStackTrace(err))
+		log.Printf("Failed to initialize database: \n%+v\n", err)
 		os.Exit(1)
 	}
 	defer func() {
@@ -67,6 +68,12 @@ func main() {
 		}
 	}()
 
+	if err := mail.Init(); err != nil {
+		log.Println(err)
+		log.Printf("Failed to initialize mail: \n%+v\n", err)
+		os.Exit(1)
+	}
+
 	redisMasterCacheRepository := repository.NewRedisMasterCacheRepository(rc)
 	masterRepository := repository.NewMasterRepository(queries)
 	masterUsecase := usecase.NewMasterUsecase(masterRepository, redisMasterCacheRepository)
@@ -74,7 +81,7 @@ func main() {
 	userRepository := repository.NewUserRepository(queries)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	authUsecase := usecase.NewAuthUsecase(userRepository)
-	authHandler := handler.NewAuthHandler(authUsecase)
+	authHandler := handler.NewAuthHandler(authUsecase, userUsecase)
 	userHandler := handler.NewUserHandler(userUsecase)
 	myListRepository := repository.NewMyListRepository(queries)
 	myListUsecase := usecase.NewMyListUsecase(myListRepository, masterRepository, redisMasterCacheRepository)
@@ -104,8 +111,11 @@ func main() {
 		),
 	)
 
+	mux.HandleFunc("/verify", authHandler.VerifyEmailHandler)
+	mux.HandleFunc("/verify/resend", authHandler.ResendVerifyEmailHandler)
+
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"}, // フロントエンドのURL
+		AllowedOrigins:   []string{cfg.FrontEndURL}, // フロントエンドのURL
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type", "connect-protocol-version", "Authorization"},
 		AllowCredentials: true,

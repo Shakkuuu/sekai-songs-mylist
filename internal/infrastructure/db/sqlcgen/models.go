@@ -88,12 +88,16 @@ type Unit struct {
 }
 
 type User struct {
-	ID        uuid.UUID
-	Email     string
-	Password  string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
-	DeletedAt sql.NullTime
+	ID             uuid.UUID
+	Email          string
+	Password       string
+	IsVerified     sql.NullBool
+	VerifyToken    sql.NullString
+	TokenExpiresAt sql.NullTime
+	IsAdmin        sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 type VocalPattern struct {

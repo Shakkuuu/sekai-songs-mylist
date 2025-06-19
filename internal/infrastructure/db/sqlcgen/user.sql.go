@@ -39,7 +39,7 @@ func (q *Queries) ExistsUserByID(ctx context.Context, id uuid.UUID) (bool, error
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password, created_at, updated_at, deleted_at FROM users WHERE email = $1
+SELECT id, email, password, is_verified, verify_token, token_expires_at, is_admin, created_at, updated_at, deleted_at FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -49,6 +49,10 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.ID,
 		&i.Email,
 		&i.Password,
+		&i.IsVerified,
+		&i.VerifyToken,
+		&i.TokenExpiresAt,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -57,7 +61,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, password, created_at, updated_at, deleted_at FROM users WHERE id = $1
+SELECT id, email, password, is_verified, verify_token, token_expires_at, is_admin, created_at, updated_at, deleted_at FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
@@ -67,6 +71,10 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.ID,
 		&i.Email,
 		&i.Password,
+		&i.IsVerified,
+		&i.VerifyToken,
+		&i.TokenExpiresAt,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -75,18 +83,22 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (id, email, password, created_at, updated_at, deleted_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, email, password, created_at, updated_at, deleted_at
+INSERT INTO users (id, email, password, is_verified, verify_token, token_expires_at, is_admin, created_at, updated_at, deleted_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING id, email, password, is_verified, verify_token, token_expires_at, is_admin, created_at, updated_at, deleted_at
 `
 
 type InsertUserParams struct {
-	ID        uuid.UUID
-	Email     string
-	Password  string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
-	DeletedAt sql.NullTime
+	ID             uuid.UUID
+	Email          string
+	Password       string
+	IsVerified     sql.NullBool
+	VerifyToken    sql.NullString
+	TokenExpiresAt sql.NullTime
+	IsAdmin        sql.NullBool
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	DeletedAt      sql.NullTime
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, error) {
@@ -94,6 +106,10 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		arg.ID,
 		arg.Email,
 		arg.Password,
+		arg.IsVerified,
+		arg.VerifyToken,
+		arg.TokenExpiresAt,
+		arg.IsAdmin,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.DeletedAt,
@@ -103,6 +119,10 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 		&i.ID,
 		&i.Email,
 		&i.Password,
+		&i.IsVerified,
+		&i.VerifyToken,
+		&i.TokenExpiresAt,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -110,8 +130,30 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 	return i, err
 }
 
+const isAdminByID = `-- name: IsAdminByID :one
+SELECT is_admin FROM users WHERE id = $1
+`
+
+func (q *Queries) IsAdminByID(ctx context.Context, id uuid.UUID) (sql.NullBool, error) {
+	row := q.db.QueryRowContext(ctx, isAdminByID, id)
+	var is_admin sql.NullBool
+	err := row.Scan(&is_admin)
+	return is_admin, err
+}
+
+const isVerifiedByID = `-- name: IsVerifiedByID :one
+SELECT is_verified FROM users WHERE id = $1
+`
+
+func (q *Queries) IsVerifiedByID(ctx context.Context, id uuid.UUID) (sql.NullBool, error) {
+	row := q.db.QueryRowContext(ctx, isVerifiedByID, id)
+	var is_verified sql.NullBool
+	err := row.Scan(&is_verified)
+	return is_verified, err
+}
+
 const listUsers = `-- name: ListUsers :many
-SELECT id, email, password, created_at, updated_at, deleted_at FROM users ORDER BY id
+SELECT id, email, password, is_verified, verify_token, token_expires_at, is_admin, created_at, updated_at, deleted_at FROM users ORDER BY id
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
@@ -127,6 +169,10 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 			&i.ID,
 			&i.Email,
 			&i.Password,
+			&i.IsVerified,
+			&i.VerifyToken,
+			&i.TokenExpiresAt,
+			&i.IsAdmin,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -180,6 +226,24 @@ func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams
 	return err
 }
 
+const updateUserIsVerified = `-- name: UpdateUserIsVerified :exec
+UPDATE users
+SET is_verified = $1,
+    updated_at = $2
+WHERE id = $3
+`
+
+type UpdateUserIsVerifiedParams struct {
+	IsVerified sql.NullBool
+	UpdatedAt  sql.NullTime
+	ID         uuid.UUID
+}
+
+func (q *Queries) UpdateUserIsVerified(ctx context.Context, arg UpdateUserIsVerifiedParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserIsVerified, arg.IsVerified, arg.UpdatedAt, arg.ID)
+	return err
+}
+
 const updateUserPassword = `-- name: UpdateUserPassword :exec
 UPDATE users
 SET password = $1,
@@ -195,5 +259,41 @@ type UpdateUserPasswordParams struct {
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
 	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Password, arg.UpdatedAt, arg.ID)
+	return err
+}
+
+const updateUserTokenExpiresAt = `-- name: UpdateUserTokenExpiresAt :exec
+UPDATE users
+SET token_expires_at = $1,
+    updated_at = $2
+WHERE id = $3
+`
+
+type UpdateUserTokenExpiresAtParams struct {
+	TokenExpiresAt sql.NullTime
+	UpdatedAt      sql.NullTime
+	ID             uuid.UUID
+}
+
+func (q *Queries) UpdateUserTokenExpiresAt(ctx context.Context, arg UpdateUserTokenExpiresAtParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserTokenExpiresAt, arg.TokenExpiresAt, arg.UpdatedAt, arg.ID)
+	return err
+}
+
+const updateUserVerifyToken = `-- name: UpdateUserVerifyToken :exec
+UPDATE users
+SET verify_token = $1,
+    updated_at = $2
+WHERE id = $3
+`
+
+type UpdateUserVerifyTokenParams struct {
+	VerifyToken sql.NullString
+	UpdatedAt   sql.NullTime
+	ID          uuid.UUID
+}
+
+func (q *Queries) UpdateUserVerifyToken(ctx context.Context, arg UpdateUserVerifyTokenParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserVerifyToken, arg.VerifyToken, arg.UpdatedAt, arg.ID)
 	return err
 }

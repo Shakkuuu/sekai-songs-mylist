@@ -5,6 +5,7 @@ import { ConnectError } from "@bufbuild/connect"; // ConnectError をインポ�
 import { MusicVideoType } from "../gen/enums/master_pb";
 import { useArtists, useUnits } from "../hooks/useMasterLists";
 import Select from "react-select";
+import { IMAGE_BASE_URL } from "../lib/constants";
 
 export const CreateSong = () => {
   const artists = useArtists();
@@ -55,7 +56,7 @@ export const CreateSong = () => {
     formData.append("file", thumbnailFile);
 
     try {
-      const res = await fetch("http://localhost:8888/upload/thumbnail", {
+      const res = await fetch(IMAGE_BASE_URL + "/upload/thumbnail", {
         method: "POST",
         body: formData,
       });

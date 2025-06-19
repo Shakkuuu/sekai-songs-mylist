@@ -19,7 +19,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app
 
 COPY --from=build /app/main .
-
-EXPOSE 8080
+COPY --from=build /app/client_secret.json .
+COPY --from=build /app/token.json .
 
 CMD ["./main"]

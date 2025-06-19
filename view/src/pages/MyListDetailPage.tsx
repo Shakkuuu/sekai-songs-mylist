@@ -11,6 +11,7 @@ import {
   getClearTypeDisplayName,
 } from "../utils/enumDisplay";
 import "./MyListDetailPage.css";
+import { IMAGE_BASE_URL } from "../lib/constants";
 
 export const MyListDetailPage = () => {
   const { myListId } = useParams();
@@ -30,7 +31,10 @@ export const MyListDetailPage = () => {
       <div className="mylist-detail-header">
         <h2>マイリスト詳細</h2>
         <div className="header-actions">
-          <button className="edit-button" onClick={() => navigate(`/mylist/${myListId}/edit`)}>
+          <button
+            className="edit-button"
+            onClick={() => navigate(`/mylist/${myListId}/edit`)}
+          >
             編集
           </button>
           <button className="back-button" onClick={() => navigate("/mylist")}>
@@ -50,7 +54,7 @@ export const MyListDetailPage = () => {
                     src={
                       mlc.chart.song.thumbnail.startsWith("http")
                         ? mlc.chart.song.thumbnail
-                        : `http://localhost:8888${mlc.chart.song.thumbnail}`
+                        : `${IMAGE_BASE_URL}${mlc.chart.song.thumbnail}`
                     }
                     alt={mlc.chart.song.name}
                   />
@@ -62,27 +66,30 @@ export const MyListDetailPage = () => {
                 <div className="chart-header">
                   <h3 className="chart-name">{mlc.chart?.song?.name}</h3>
                   <div className="chart-difficulty">
-                    {getDifficultyTypeDisplayName(mlc.chart?.difficultyType ?? 0)} {mlc.chart?.level}
+                    {getDifficultyTypeDisplayName(
+                      mlc.chart?.difficultyType ?? 0
+                    )}{" "}
+                    {mlc.chart?.level}
                   </div>
                 </div>
                 <p className="chart-creators">
-                  {mlc.chart?.song?.lyrics?.name} / {mlc.chart?.song?.music?.name} / {mlc.chart?.song?.arrangement?.name}
+                  {mlc.chart?.song?.lyrics?.name} /{" "}
+                  {mlc.chart?.song?.music?.name} /{" "}
+                  {mlc.chart?.song?.arrangement?.name}
                 </p>
                 <div className="chart-status">
                   <span className="clear-status">
                     クリア状況: {getClearTypeDisplayName(mlc.clearType)}
                   </span>
-                  {mlc.memo && (
-                    <span className="memo">
-                      メモ: {mlc.memo}
-                    </span>
-                  )}
+                  {mlc.memo && <span className="memo">メモ: {mlc.memo}</span>}
                 </div>
               </div>
               <div className="chart-actions">
                 <button
                   className="edit-button"
-                  onClick={() => navigate(`/mylist/${myListId}/chart/${mlc.id}`)}
+                  onClick={() =>
+                    navigate(`/mylist/${myListId}/chart/${mlc.id}`)
+                  }
                 >
                   詳細
                 </button>

@@ -14,6 +14,7 @@ type Config struct {
 	ServerPort     int    `env:"SERVER_PORT"`
 	RedisHost      string `env:"REDIS_HOST"`
 	RedisPort      int    `env:"REDIS_PORT"`
+	FrontEndURL    string `env:"FRONT_END_URL"`
 }
 
 func NewConfig() (*Config, error) {

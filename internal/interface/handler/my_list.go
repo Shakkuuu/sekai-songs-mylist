@@ -12,7 +12,7 @@ import (
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/domain/repository"
 	proto_master "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master"
 	proto_my_list "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/mylist/v1"
-	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/auth"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 	"github.com/cockroachdb/errors"
 )
@@ -31,12 +31,17 @@ func NewMyListHandler(myListUsecase usecase.MyListUsecase) *MyListHandler {
 func (h *MyListHandler) GetMyListsByUserID(ctx context.Context, req *connect.Request[proto_my_list.GetMyListsByUserIDRequest]) (*connect.Response[proto_my_list.GetMyListsByUserIDResponse], error) {
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	myLists, err := h.myListUsecase.GetMyListsByUserID(ctx, id)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoMyLists := make([]*proto_my_list.MyList, len(myLists))
@@ -58,16 +63,23 @@ func (h *MyListHandler) GetMyListsByUserID(ctx context.Context, req *connect.Req
 
 func (h *MyListHandler) CreateMyList(ctx context.Context, req *connect.Request[proto_my_list.CreateMyListRequest]) (*connect.Response[proto_my_list.CreateMyListResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	if err := h.myListUsecase.CreateMyList(ctx, id, req.Msg.GetName(), req.Msg.GetPosition()); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.CreateMyListResponse{}), nil
@@ -75,12 +87,16 @@ func (h *MyListHandler) CreateMyList(ctx context.Context, req *connect.Request[p
 
 func (h *MyListHandler) ChangeMyListName(ctx context.Context, req *connect.Request[proto_my_list.ChangeMyListNameRequest]) (*connect.Response[proto_my_list.ChangeMyListNameResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.myListUsecase.ChangeMyListName(ctx, req.Msg.GetId(), req.Msg.GetName())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.ChangeMyListNameResponse{}), nil
@@ -88,12 +104,16 @@ func (h *MyListHandler) ChangeMyListName(ctx context.Context, req *connect.Reque
 
 func (h *MyListHandler) ChangeMyListPosition(ctx context.Context, req *connect.Request[proto_my_list.ChangeMyListPositionRequest]) (*connect.Response[proto_my_list.ChangeMyListPositionResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.myListUsecase.ChangeMyListPosition(ctx, req.Msg.GetId(), req.Msg.GetPosition())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.ChangeMyListPositionResponse{}), nil
@@ -102,9 +122,13 @@ func (h *MyListHandler) ChangeMyListPosition(ctx context.Context, req *connect.R
 func (h *MyListHandler) DeleteMyList(ctx context.Context, req *connect.Request[proto_my_list.DeleteMyListRequest]) (*connect.Response[proto_my_list.DeleteMyListResponse], error) {
 	if err := h.myListUsecase.DeleteMyList(ctx, req.Msg.GetId()); err != nil {
 		if errors.Is(err, usecase.ErrMyListNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 	return connect.NewResponse(&proto_my_list.DeleteMyListResponse{}), nil
 }
@@ -114,14 +138,20 @@ func (h *MyListHandler) GetMyListChartsByMyListID(ctx context.Context, req *conn
 	myList, err := h.myListUsecase.GetMyListByID(ctx, req.Msg.GetMyListId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	myListCharts, err := h.myListUsecase.GetMyListChartsByMyListID(ctx, req.Msg.GetMyListId())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoMyListCharts := make([]*proto_my_list.MyListChart, len(myListCharts))
@@ -224,12 +254,13 @@ func (h *MyListHandler) GetMyListChartByID(ctx context.Context, req *connect.Req
 	myListChart, err := h.myListUsecase.GetMyListChartByID(ctx, req.Msg.GetId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			log.Println("point1")
-			fmt.Printf("%v\n", myListChart)
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		log.Println("point2")
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 	var protoVocalPatterns []*proto_master.VocalPattern
 	for _, vp := range myListChart.Chart.Song.VocalPatterns {
@@ -315,14 +346,20 @@ func (h *MyListHandler) GetMyListChartByID(ctx context.Context, req *connect.Req
 
 func (h *MyListHandler) AddMyListChart(ctx context.Context, req *connect.Request[proto_my_list.AddMyListChartRequest]) (*connect.Response[proto_my_list.AddMyListChartResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	if err := h.myListUsecase.AddMyListChart(ctx, req.Msg.GetMyListId(), req.Msg.GetChartId(), req.Msg.GetClearType(), req.Msg.GetMemo()); err != nil {
 		if errors.Is(err, usecase.ErrDuplicateMyListChart) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.AddMyListChartResponse{}), nil
@@ -330,12 +367,16 @@ func (h *MyListHandler) AddMyListChart(ctx context.Context, req *connect.Request
 
 func (h *MyListHandler) ChangeMyListChartClearType(ctx context.Context, req *connect.Request[proto_my_list.ChangeMyListChartClearTypeRequest]) (*connect.Response[proto_my_list.ChangeMyListChartClearTypeResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.myListUsecase.ChangeMyListChartClearType(ctx, req.Msg.GetId(), req.Msg.GetClearType())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.ChangeMyListChartClearTypeResponse{}), nil
@@ -343,12 +384,16 @@ func (h *MyListHandler) ChangeMyListChartClearType(ctx context.Context, req *con
 
 func (h *MyListHandler) ChangeMyListChartMemo(ctx context.Context, req *connect.Request[proto_my_list.ChangeMyListChartMemoRequest]) (*connect.Response[proto_my_list.ChangeMyListChartMemoResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	err := h.myListUsecase.ChangeMyListChartMemo(ctx, req.Msg.GetId(), req.Msg.GetMemo())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.ChangeMyListChartMemoResponse{}), nil
@@ -357,9 +402,13 @@ func (h *MyListHandler) ChangeMyListChartMemo(ctx context.Context, req *connect.
 func (h *MyListHandler) DeleteMyListChart(ctx context.Context, req *connect.Request[proto_my_list.DeleteMyListChartRequest]) (*connect.Response[proto_my_list.DeleteMyListChartResponse], error) {
 	if err := h.myListUsecase.DeleteMyListChart(ctx, req.Msg.GetId()); err != nil {
 		if errors.Is(err, usecase.ErrMyListChartNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 	return connect.NewResponse(&proto_my_list.DeleteMyListChartResponse{}), nil
 }
@@ -368,9 +417,13 @@ func (h *MyListHandler) GetMyListChartAttachmentsByMyListChartID(ctx context.Con
 	myListChart, err := h.myListUsecase.GetMyListChartByID(ctx, req.Msg.GetMyListChartId())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 	var protoVocalPatterns []*proto_master.VocalPattern
 	for _, vp := range myListChart.Chart.Song.VocalPatterns {
@@ -452,7 +505,9 @@ func (h *MyListHandler) GetMyListChartAttachmentsByMyListChartID(ctx context.Con
 
 	myListChartAttachments, err := h.myListUsecase.GetMyListChartAttachmentsByMyListChartID(ctx, req.Msg.GetMyListChartId())
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	protoMyListChartAttachments := make([]*proto_my_list.MyListChartAttachment, len(myListChartAttachments))
@@ -475,11 +530,15 @@ func (h *MyListHandler) GetMyListChartAttachmentsByMyListChartID(ctx context.Con
 
 func (h *MyListHandler) AddMyListChartAttachment(ctx context.Context, req *connect.Request[proto_my_list.AddMyListChartAttachmentRequest]) (*connect.Response[proto_my_list.AddMyListChartAttachmentResponse], error) {
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	if err := h.myListUsecase.AddMyListChartAttachment(ctx, req.Msg.GetMyListChartId(), req.Msg.GetAttachmentType(), req.Msg.GetFileUrl(), req.Msg.GetCaption()); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_my_list.AddMyListChartAttachmentResponse{}), nil
@@ -488,9 +547,13 @@ func (h *MyListHandler) AddMyListChartAttachment(ctx context.Context, req *conne
 func (h *MyListHandler) DeleteMyListChartAttachment(ctx context.Context, req *connect.Request[proto_my_list.DeleteMyListChartAttachmentRequest]) (*connect.Response[proto_my_list.DeleteMyListChartAttachmentResponse], error) {
 	if err := h.myListUsecase.DeleteMyListChartAttachment(ctx, req.Msg.GetId()); err != nil {
 		if errors.Is(err, usecase.ErrMyListChartAttachmentNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 	return connect.NewResponse(&proto_my_list.DeleteMyListChartAttachmentResponse{}), nil
 }

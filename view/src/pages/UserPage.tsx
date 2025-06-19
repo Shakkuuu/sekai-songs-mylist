@@ -107,17 +107,6 @@ export const UserPage = () => {
           <p>{user ? user.createdAt : "ユーザー情報取得中..."}</p>
         </div>
       </div>
-      <div className="card">
-        <h2>マイリスト統計</h2>
-        <div className="form-group">
-          <label>作成したマイリスト数</label>
-          <p>3</p>
-        </div>
-        <div className="form-group">
-          <label>登録した譜面数</label>
-          <p>15</p>
-        </div>
-      </div>
       <h3>メールアドレス変更</h3>
       <form onSubmit={handleChangeEmail}>
         <input

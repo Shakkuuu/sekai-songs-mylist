@@ -2,13 +2,14 @@ package handler
 
 import (
 	"context"
+	"log"
 
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/domain/repository"
 	proto_user "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/user/v1"
-	"github.com/Shakkuuu/sekai-songs-mylist/internal/infrastructure/auth"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 	"github.com/cockroachdb/errors"
 )
@@ -26,15 +27,22 @@ func NewUserHandler(userUsecase usecase.UserUsecase) *UserHandler {
 func (h *UserHandler) UserInfo(ctx context.Context, req *connect.Request[proto_user.UserInfoRequest]) (*connect.Response[proto_user.UserInfoResponse], error) {
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	user, err := h.userUsecase.UserInfo(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_user.UserInfoResponse{
@@ -63,19 +71,28 @@ func (h *UserHandler) Logout(ctx context.Context, req *connect.Request[proto_use
 func (h *UserHandler) ChangeEmail(ctx context.Context, req *connect.Request[proto_user.ChangeEmailRequest]) (*connect.Response[proto_user.ChangeEmailResponse], error) {
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	user, err := h.userUsecase.ChangeEmail(ctx, id, req.Msg.GetEmail())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_user.ChangeEmailResponse{
@@ -88,28 +105,45 @@ func (h *UserHandler) ChangeEmail(ctx context.Context, req *connect.Request[prot
 func (h *UserHandler) ChangePassword(ctx context.Context, req *connect.Request[proto_user.ChangePasswordRequest]) (*connect.Response[proto_user.ChangePasswordResponse], error) {
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	if err := req.Msg.Validate(); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 	if !containsLetter(req.Msg.GetNewPassword()) || !containsDigit(req.Msg.GetNewPassword()) {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("password must include at least one letter and one number"))
+		err := errors.New("password must include at least one letter and one number")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 	if req.Msg.GetNewPassword() != req.Msg.GetNewCheckPassword() {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("password, check_password not match"))
+		err := errors.New("password, check_password not match")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
 	updatedUser, err := h.userUsecase.ChangePassword(ctx, id, req.Msg.GetOldPassword(), req.Msg.GetNewPassword())
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
 		if errors.Is(err, usecase.ErrMismatchedHashAndPassword) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_user.ChangePasswordResponse{
@@ -122,14 +156,21 @@ func (h *UserHandler) ChangePassword(ctx context.Context, req *connect.Request[p
 func (h *UserHandler) DeleteUser(ctx context.Context, req *connect.Request[proto_user.DeleteUserRequest]) (*connect.Response[proto_user.DeleteUserResponse], error) {
 	id, ok := ctx.Value(auth.UserIDKey).(string)
 	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user id not found in context"))
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
 	}
 
 	if err := h.userUsecase.DeleteUser(ctx, id); err != nil {
 		if errors.Is(err, usecase.ErrUserNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.WithStack(err))
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
 		}
-		return nil, connect.NewError(connect.CodeInternal, errors.WithStack(err))
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
 	}
 
 	return connect.NewResponse(&proto_user.DeleteUserResponse{}), nil
