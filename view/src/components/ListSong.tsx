@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { masterClient } from "../lib/grpcClient";
 import { Song } from "../gen/master/song_pb";
 import "./ListSong.css";
-import { IMAGE_BASE_URL } from "../lib/constants";
 
 interface SongDetailModalProps {
   song: Song;
@@ -78,7 +77,7 @@ export const SongList = () => {
                   src={
                     song.thumbnail.startsWith("http")
                       ? song.thumbnail
-                      : `${IMAGE_BASE_URL}${song.thumbnail}`
+                      : `${song.thumbnail}`
                   }
                   alt={song.name}
                 />

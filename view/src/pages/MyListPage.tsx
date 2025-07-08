@@ -6,7 +6,7 @@ import {
   GetMyListsByUserIDRequest,
   ChangeMyListPositionRequest,
   ChangeMyListNameRequest,
-  DeleteMyListRequest
+  DeleteMyListRequest,
 } from "../gen/mylist/v1/mylist_pb";
 import { HamburgerMenu } from "../components/HamburgerMenu";
 import "../styles/common.css";
@@ -22,7 +22,9 @@ export const MyListPage = () => {
 
   useEffect(() => {
     const fetchMyLists = async () => {
-      const response = await myListClient.getMyListsByUserID(new GetMyListsByUserIDRequest());
+      const response = await myListClient.getMyListsByUserID(
+        new GetMyListsByUserIDRequest()
+      );
       setMyLists(response.myLists);
     };
     fetchMyLists();
@@ -129,10 +131,14 @@ export const MyListPage = () => {
               </div>
             ) : (
               <>
-                <h3 onClick={() => navigate(`/mylist/${myList.id}`)}>{myList.name}</h3>
+                <h3 onClick={() => navigate(`/mylist/${myList.id}`)}>
+                  {myList.name}
+                </h3>
                 <p>作成日: {myList.createdAt?.toDate().toLocaleDateString()}</p>
                 <div className="mylist-actions">
-                  <button onClick={() => handleEdit(myList)}>編集</button>
+                  <button onClick={() => handleEdit(myList)}>
+                    マイリスト名編集
+                  </button>
                   <button onClick={() => handleDelete(myList.id)}>削除</button>
                 </div>
               </>

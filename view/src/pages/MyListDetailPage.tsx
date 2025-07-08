@@ -11,7 +11,6 @@ import {
   getClearTypeDisplayName,
 } from "../utils/enumDisplay";
 import "./MyListDetailPage.css";
-import { IMAGE_BASE_URL } from "../lib/constants";
 
 export const MyListDetailPage = () => {
   const { myListId } = useParams();
@@ -54,7 +53,7 @@ export const MyListDetailPage = () => {
                     src={
                       mlc.chart.song.thumbnail.startsWith("http")
                         ? mlc.chart.song.thumbnail
-                        : `${IMAGE_BASE_URL}${mlc.chart.song.thumbnail}`
+                        : `${mlc.chart.song.thumbnail}`
                     }
                     alt={mlc.chart.song.name}
                   />

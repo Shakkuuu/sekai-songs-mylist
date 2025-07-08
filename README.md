@@ -10,13 +10,16 @@
 - masterデータ作成
   - masterデータはv999.999.999_n_hoge-data.up.sqlで管理
   - dumpではmasterのデータはとりたくない
-  - thumbnailの画像やmy_list_chart_attachmentsのfile_urlの画像とか動画は別のローカルサーバーを立てておく
-  - そこにアップロードしてそこへのURLをDBに保存
-  - CreateSongの時にフロントがそこにPostでファイルをアップロードして、そのレスポンスのURLをバックエンドにTEXTで送ってDBに保存
-  - アタッチメントのfile_urlも同様
-  - thumbnailを表示するところは文字列じゃなくて画像を表示するように修正
-- Masterページにアクセスできる管理者権限。どうやってその人だけ可能にするか。UserにisAdminを追加して、Adminのメアドリストをどこかで読み込ませるとか
-  - 一旦sql直叩き
+  - thumbnailの画像やmy_list_chart_attachmentsのfile_urlの画像とか動画は別のローカルサーバーを立てておく ok
+  - そこにアップロードしてそこへのURLをDBに保存 ok
+  - CreateSongの時にフロントがそこにPostでファイルをアップロードして、そのレスポンスのURLをバックエンドにTEXTで送ってDBに保存 ok
+  - アタッチメントのfile_urlも同様 ok
+  - thumbnailを表示するところは文字列じゃなくて画像を表示するように修正 ok
+- ファイルの保存先としてGoogleDrive ok
+  - 保存時にファイルサイズを軽くする
+- バックエンドはRender
+  - RESTでhealthCheck用ハンドラ作っておく
+- フロントはどこに置こうか
 
 ## ok
 
@@ -39,6 +42,9 @@
 - ユーザー作成時にメールでメールアドレス認証 ok
 - handlerに認証メール再送のエンドポイント作成。クエリパラメータにメールアドレス。認証tokenと認証トークン期限を更新する必要あり。再送URLはメールの下の方に書いておく ok
 - go fmt、フロントのURLを定数化 ok
+- Masterページにアクセスできる管理者権限。どうやってその人だけ可能にするか。UserにisAdminを追加して、Adminのメアドリストをどこかで読み込ませるとか ok
+  - 一旦sql直叩き ok
+- masterのアクセス権。フロントのページ表示制限はどうするか。ページ遷移前にisAdminを確認して弾くとか？ ok
 
 ## メモ
 

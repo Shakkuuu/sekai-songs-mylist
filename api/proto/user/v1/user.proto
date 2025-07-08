@@ -62,10 +62,16 @@ message ChangePasswordResponse {
 message DeleteUserRequest {}
 message DeleteUserResponse {}
 
+message IsAdminRequest {}
+message IsAdminResponse {
+  bool is_admin = 1;
+}
+
 service UserService {
   rpc UserInfo(UserInfoRequest) returns (UserInfoResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc ChangeEmail(ChangeEmailRequest) returns (ChangeEmailResponse);
   rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc IsAdmin(IsAdminRequest) returns (IsAdminResponse);
 }

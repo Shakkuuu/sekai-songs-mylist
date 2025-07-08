@@ -19,6 +19,8 @@ services:
       - MAIL_TOKEN_FILE=${MAIL_TOKEN_FILE}
       - BACK_END_URL=${BACK_END_URL}
       - FROM_EMAIL_ADDRESS=${FROM_EMAIL_ADDRESS}
+      - THUMBNAIL_FOLDER_ID=${THUMBNAIL_FOLDER_ID}
+      - ATTACHMENT_FOLDER_ID=${ATTACHMENT_FOLDER_ID}
     tty: true
     depends_on:
       - db

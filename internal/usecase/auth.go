@@ -6,7 +6,7 @@ import (
 
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/domain/repository"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
-	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/mail"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/googleoauth"
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -66,7 +66,7 @@ func (u *authUsecase) Signup(ctx context.Context, email, password string) error 
 		return errors.WithStack(err)
 	}
 
-	if err := mail.SendVerificationEmail(ctx, email, verifyToken); err != nil {
+	if err := googleoauth.SendVerificationEmail(ctx, email, verifyToken); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -136,7 +136,7 @@ func (u *authUsecase) ResendVerifyUser(ctx context.Context, id, email string) er
 		return errors.WithStack(err)
 	}
 
-	if err := mail.SendVerificationEmail(ctx, email, verifyToken); err != nil {
+	if err := googleoauth.SendVerificationEmail(ctx, email, verifyToken); err != nil {
 		return errors.WithStack(err)
 	}
 

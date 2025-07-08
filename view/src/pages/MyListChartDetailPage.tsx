@@ -12,7 +12,8 @@ import {
 import { AttachmentType, ClearType } from "../gen/enums/mylist_pb";
 import { getDifficultyTypeDisplayName } from "../utils/enumDisplay";
 import "./MyListChartDetailPage.css";
-import { IMAGE_BASE_URL } from "../lib/constants";
+import { API_BASE_URL } from "../lib/constants";
+import React from "react";
 
 const ATTACHMENT_TYPE_LABELS: Record<AttachmentType, string> = {
   [AttachmentType.UNSPECIFIED]: "未指定",
@@ -103,6 +104,67 @@ const ChartDetailModal = ({ chart, onClose }: ChartDetailModalProps) => {
   );
 };
 
+// 添付ファイル拡大プレビュー用モーダル
+interface AttachmentPreviewModalProps {
+  attachment: MyListChartAttachment;
+  onClose: () => void;
+}
+const AttachmentPreviewModal = ({
+  attachment,
+  onClose,
+}: AttachmentPreviewModalProps) => {
+  const url = attachment.fileUrl.startsWith("http")
+    ? attachment.fileUrl
+    : `${attachment.fileUrl}`;
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 1000 }}>
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: "90vw", maxHeight: "90vh", padding: 24 }}
+      >
+        <button
+          className="modal-close"
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 16,
+            fontSize: 32,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+        <div style={{ textAlign: "center" }}>
+          {attachment.attachmentType === AttachmentType.PICTURE ? (
+            <img
+              src={url}
+              alt={attachment.caption}
+              style={{ maxWidth: "80vw", maxHeight: "70vh", borderRadius: 8 }}
+            />
+          ) : attachment.attachmentType === AttachmentType.MOVIE ? (
+            <video
+              src={url}
+              controls
+              style={{ maxWidth: "80vw", maxHeight: "70vh", borderRadius: 8 }}
+            />
+          ) : (
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {attachment.caption}
+            </a>
+          )}
+          <div style={{ marginTop: 16, color: "#333" }}>
+            {attachment.caption}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const MyListChartDetailPage = () => {
   const { myListId, myListChartId } = useParams();
   const [chart, setChart] = useState<MyListChart | null>(null);
@@ -117,6 +179,8 @@ export const MyListChartDetailPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [showChartDetail, setShowChartDetail] = useState(false);
+  const [showAttachment, setShowAttachment] =
+    useState<MyListChartAttachment | null>(null);
   const navigate = useNavigate();
 
   const fetchAttachments = useCallback(async () => {
@@ -130,7 +194,6 @@ export const MyListChartDetailPage = () => {
   }, [myListChartId]);
 
   useEffect(() => {
-    console.log(myListChartId);
     myListClient
       .getMyListChartByID(
         new GetMyListChartByIDRequest({ id: Number(myListChartId) })
@@ -158,7 +221,7 @@ export const MyListChartDetailPage = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch(IMAGE_BASE_URL + "/upload/attachment", {
+      const res = await fetch(API_BASE_URL + "/upload/attachment", {
         method: "POST",
         body: formData,
       });
@@ -198,12 +261,23 @@ export const MyListChartDetailPage = () => {
     );
     const att = attachments.find((a) => a.id === id);
     if (att && att.fileUrl) {
-      const fileUrl = att.fileUrl.startsWith("http")
-        ? new URL(att.fileUrl).pathname
-        : att.fileUrl;
-      const fileName = fileUrl.split("/").pop();
-      if (fileName) {
-        fetch(IMAGE_BASE_URL + `/delete/attachment/${fileName}`, {
+      let fileId: string | null = null;
+      try {
+        // fileUrlがhttpから始まる場合はURLとしてパース
+        if (att.fileUrl.startsWith("http")) {
+          const url = new URL(att.fileUrl);
+          // /image?id=hogehoge の形式を想定
+          fileId = url.searchParams.get("id");
+        } else {
+          // それ以外は従来通り
+          const fileName = att.fileUrl.split("/").pop();
+          fileId = fileName ?? null;
+        }
+      } catch (e) {
+        console.warn("URLパース失敗:", e);
+      }
+      if (fileId) {
+        fetch(API_BASE_URL + `/delete/attachment?id=${fileId}`, {
           method: "DELETE",
         }).catch((err) => {
           console.warn("ファイルサーバーでの削除に失敗:", err);
@@ -214,15 +288,19 @@ export const MyListChartDetailPage = () => {
   };
 
   const renderAttachmentMedia = (att: MyListChartAttachment) => {
-    const url = att.fileUrl.startsWith("http")
-      ? att.fileUrl
-      : IMAGE_BASE_URL + `${att.fileUrl}`;
+    const url = att.fileUrl.startsWith("http") ? att.fileUrl : `${att.fileUrl}`;
     if (att.attachmentType === AttachmentType.PICTURE) {
       return (
         <img
           src={url}
           alt={att.caption}
-          style={{ maxWidth: 120, maxHeight: 120, display: "block" }}
+          style={{
+            maxWidth: 120,
+            maxHeight: 120,
+            display: "block",
+            cursor: "pointer",
+          }}
+          onClick={() => setShowAttachment(att)}
         />
       );
     }
@@ -231,7 +309,13 @@ export const MyListChartDetailPage = () => {
         <video
           src={url}
           controls
-          style={{ maxWidth: 200, maxHeight: 120, display: "block" }}
+          style={{
+            maxWidth: 200,
+            maxHeight: 120,
+            display: "block",
+            cursor: "pointer",
+          }}
+          onClick={() => setShowAttachment(att)}
         >
           お使いのブラウザは動画タグに対応していません
         </video>
@@ -264,9 +348,6 @@ export const MyListChartDetailPage = () => {
       <div className="mylist-chart-detail-header">
         <h2>譜面詳細</h2>
         <div className="header-actions">
-          <button className="save-button" onClick={handleSave}>
-            保存
-          </button>
           <button
             className="back-button"
             onClick={() => navigate(`/mylist/${myListId}`)}
@@ -282,7 +363,7 @@ export const MyListChartDetailPage = () => {
               src={
                 chart.chart.song.thumbnail.startsWith("http")
                   ? chart.chart.song.thumbnail
-                  : IMAGE_BASE_URL + `${chart.chart.song.thumbnail}`
+                  : `${chart.chart.song.thumbnail}`
               }
               alt={chart.chart.song.name}
             />
@@ -342,6 +423,9 @@ export const MyListChartDetailPage = () => {
             />
           </div>
         </div>
+        <button className="save-button" onClick={handleSave}>
+          保存
+        </button>
       </div>
 
       <div className="attachments-section">
@@ -423,6 +507,12 @@ export const MyListChartDetailPage = () => {
         <ChartDetailModal
           chart={chart}
           onClose={() => setShowChartDetail(false)}
+        />
+      )}
+      {showAttachment && (
+        <AttachmentPreviewModal
+          attachment={showAttachment}
+          onClose={() => setShowAttachment(null)}
         />
       )}
     </div>

@@ -463,3 +463,71 @@ export class DeleteUserResponse extends Message<DeleteUserResponse> {
   }
 }
 
+/**
+ * @generated from message user.v1.IsAdminRequest
+ */
+export class IsAdminRequest extends Message<IsAdminRequest> {
+  constructor(data?: PartialMessage<IsAdminRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "user.v1.IsAdminRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): IsAdminRequest {
+    return new IsAdminRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): IsAdminRequest {
+    return new IsAdminRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): IsAdminRequest {
+    return new IsAdminRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: IsAdminRequest | PlainMessage<IsAdminRequest> | undefined, b: IsAdminRequest | PlainMessage<IsAdminRequest> | undefined): boolean {
+    return proto3.util.equals(IsAdminRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message user.v1.IsAdminResponse
+ */
+export class IsAdminResponse extends Message<IsAdminResponse> {
+  /**
+   * @generated from field: bool is_admin = 1;
+   */
+  isAdmin = false;
+
+  constructor(data?: PartialMessage<IsAdminResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "user.v1.IsAdminResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "is_admin", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): IsAdminResponse {
+    return new IsAdminResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): IsAdminResponse {
+    return new IsAdminResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): IsAdminResponse {
+    return new IsAdminResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: IsAdminResponse | PlainMessage<IsAdminResponse> | undefined, b: IsAdminResponse | PlainMessage<IsAdminResponse> | undefined): boolean {
+    return proto3.util.equals(IsAdminResponse, a, b);
+  }
+}
+

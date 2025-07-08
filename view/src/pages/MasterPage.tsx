@@ -1,30 +1,31 @@
-import { ArtistList } from "../components/ListArtist";
-import { CreateArtist } from "../components/CreateArtist";
-import { SingerList } from "../components/ListSinger";
-import { CreateSinger } from "../components/CreateSinger";
-import { UnitList } from "../components/ListUnit";
-import { CreateUnit } from "../components/CreateUnit";
-import { SongList } from "../components/ListSong";
-import { CreateSong } from "../components/CreateSong";
-import { CreateVocalPattern } from "../components/CreateVocalPattern";
-import { ChartList } from "../components/ListChart";
-import { CreateChart } from "../components/CreateChart";
 import { HamburgerMenu } from "../components/HamburgerMenu";
+import { Link } from "react-router-dom";
+import { useAdminGuard } from "../hooks/useAdminGuard";
 
-export const MasterPage = () => (
-  <div className="container">
-    <HamburgerMenu />
-    <h1>Sekai Songs Mylist - Master</h1>
-    <ArtistList />
-    <CreateArtist />
-    <SingerList />
-    <CreateSinger />
-    <UnitList />
-    <CreateUnit />
-    <CreateVocalPattern />
-    <SongList />
-    <CreateSong />
-    <ChartList />
-    <CreateChart />
-  </div>
-);
+export const MasterPage = () => {
+  const checked = useAdminGuard();
+  if (!checked) return null;
+  return (
+    <div className="container">
+      <HamburgerMenu />
+      <h1>Sekai Songs Mylist - Master</h1>
+      <ul>
+        <li>
+          <Link to="/master/artist">artist</Link>
+        </li>
+        <li>
+          <Link to="/master/singer">singer</Link>
+        </li>
+        <li>
+          <Link to="/master/unit">unit</Link>
+        </li>
+        <li>
+          <Link to="/master/song">song</Link>
+        </li>
+        <li>
+          <Link to="/master/chart">chart</Link>
+        </li>
+      </ul>
+    </div>
+  );
+};

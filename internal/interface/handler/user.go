@@ -175,3 +175,29 @@ func (h *UserHandler) DeleteUser(ctx context.Context, req *connect.Request[proto
 
 	return connect.NewResponse(&proto_user.DeleteUserResponse{}), nil
 }
+
+func (h *UserHandler) IsAdmin(ctx context.Context, req *connect.Request[proto_user.IsAdminRequest]) (*connect.Response[proto_user.IsAdminResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		if errors.Is(err, usecase.ErrUserNotFound) {
+			cerr := errors.WithStack(err)
+			log.Printf("%+v\n", cerr)
+			return nil, connect.NewError(connect.CodeNotFound, cerr)
+		}
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+
+	return connect.NewResponse(&proto_user.IsAdminResponse{
+		IsAdmin: isAdmin,
+	}), nil
+}

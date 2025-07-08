@@ -572,6 +572,86 @@ func (*DeleteUserResponse) Descriptor() ([]byte, []int) {
 	return file_user_v1_user_proto_rawDescGZIP(), []int{10}
 }
 
+type IsAdminRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsAdminRequest) Reset() {
+	*x = IsAdminRequest{}
+	mi := &file_user_v1_user_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsAdminRequest) ProtoMessage() {}
+
+func (x *IsAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsAdminRequest.ProtoReflect.Descriptor instead.
+func (*IsAdminRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{11}
+}
+
+type IsAdminResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IsAdmin       bool                   `protobuf:"varint,1,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IsAdminResponse) Reset() {
+	*x = IsAdminResponse{}
+	mi := &file_user_v1_user_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IsAdminResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IsAdminResponse) ProtoMessage() {}
+
+func (x *IsAdminResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IsAdminResponse.ProtoReflect.Descriptor instead.
+func (*IsAdminResponse) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *IsAdminResponse) GetIsAdmin() bool {
+	if x != nil {
+		return x.IsAdmin
+	}
+	return false
+}
+
 var File_user_v1_user_proto protoreflect.FileDescriptor
 
 var file_user_v1_user_proto_rawDesc = string([]byte{
@@ -644,7 +724,11 @@ var file_user_v1_user_proto_rawDesc = string([]byte{
 	0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22, 0x13, 0x0a, 0x11,
 	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x22, 0x14, 0x0a, 0x12, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xed, 0x02, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x10, 0x0a, 0x0e, 0x49, 0x73, 0x41, 0x64, 0x6d,
+	0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x2c, 0x0a, 0x0f, 0x49, 0x73, 0x41,
+	0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08,
+	0x69, 0x73, 0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07,
+	0x69, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x32, 0xab, 0x03, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72,
 	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3f, 0x0a, 0x08, 0x55, 0x73, 0x65, 0x72, 0x49,
 	0x6e, 0x66, 0x6f, 0x12, 0x18, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73,
 	0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e,
@@ -667,12 +751,16 @@ var file_user_v1_user_proto_rawDesc = string([]byte{
 	0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x55,
 	0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x75, 0x73, 0x65,
 	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x68, 0x61, 0x6b, 0x6b, 0x75, 0x75, 0x75, 0x2f, 0x73,
-	0x65, 0x6b, 0x61, 0x69, 0x2d, 0x73, 0x6f, 0x6e, 0x67, 0x73, 0x2d, 0x6d, 0x79, 0x6c, 0x69, 0x73,
-	0x74, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x75,
-	0x73, 0x65, 0x72, 0x2f, 0x76, 0x31, 0x3b, 0x75, 0x73, 0x65, 0x72, 0x76, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x07, 0x49, 0x73, 0x41, 0x64, 0x6d,
+	0x69, 0x6e, 0x12, 0x17, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x73, 0x41,
+	0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x75, 0x73,
+	0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x68, 0x61, 0x6b, 0x6b, 0x75, 0x75, 0x75, 0x2f, 0x73, 0x65, 0x6b,
+	0x61, 0x69, 0x2d, 0x73, 0x6f, 0x6e, 0x67, 0x73, 0x2d, 0x6d, 0x79, 0x6c, 0x69, 0x73, 0x74, 0x2f,
+	0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x75, 0x73, 0x65,
+	0x72, 0x2f, 0x76, 0x31, 0x3b, 0x75, 0x73, 0x65, 0x72, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 })
 
 var (
@@ -687,7 +775,7 @@ func file_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_user_v1_user_proto_goTypes = []any{
 	(*User)(nil),                   // 0: user.v1.User
 	(*UserInfoRequest)(nil),        // 1: user.v1.UserInfoRequest
@@ -700,27 +788,31 @@ var file_user_v1_user_proto_goTypes = []any{
 	(*ChangePasswordResponse)(nil), // 8: user.v1.ChangePasswordResponse
 	(*DeleteUserRequest)(nil),      // 9: user.v1.DeleteUserRequest
 	(*DeleteUserResponse)(nil),     // 10: user.v1.DeleteUserResponse
-	(*timestamppb.Timestamp)(nil),  // 11: google.protobuf.Timestamp
+	(*IsAdminRequest)(nil),         // 11: user.v1.IsAdminRequest
+	(*IsAdminResponse)(nil),        // 12: user.v1.IsAdminResponse
+	(*timestamppb.Timestamp)(nil),  // 13: google.protobuf.Timestamp
 }
 var file_user_v1_user_proto_depIdxs = []int32{
-	11, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	11, // 1: user.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	11, // 2: user.v1.User.deleted_at:type_name -> google.protobuf.Timestamp
-	11, // 3: user.v1.UserInfoResponse.created_at:type_name -> google.protobuf.Timestamp
-	11, // 4: user.v1.ChangeEmailResponse.created_at:type_name -> google.protobuf.Timestamp
-	11, // 5: user.v1.ChangePasswordResponse.created_at:type_name -> google.protobuf.Timestamp
+	13, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	13, // 1: user.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	13, // 2: user.v1.User.deleted_at:type_name -> google.protobuf.Timestamp
+	13, // 3: user.v1.UserInfoResponse.created_at:type_name -> google.protobuf.Timestamp
+	13, // 4: user.v1.ChangeEmailResponse.created_at:type_name -> google.protobuf.Timestamp
+	13, // 5: user.v1.ChangePasswordResponse.created_at:type_name -> google.protobuf.Timestamp
 	1,  // 6: user.v1.UserService.UserInfo:input_type -> user.v1.UserInfoRequest
 	3,  // 7: user.v1.UserService.Logout:input_type -> user.v1.LogoutRequest
 	5,  // 8: user.v1.UserService.ChangeEmail:input_type -> user.v1.ChangeEmailRequest
 	7,  // 9: user.v1.UserService.ChangePassword:input_type -> user.v1.ChangePasswordRequest
 	9,  // 10: user.v1.UserService.DeleteUser:input_type -> user.v1.DeleteUserRequest
-	2,  // 11: user.v1.UserService.UserInfo:output_type -> user.v1.UserInfoResponse
-	4,  // 12: user.v1.UserService.Logout:output_type -> user.v1.LogoutResponse
-	6,  // 13: user.v1.UserService.ChangeEmail:output_type -> user.v1.ChangeEmailResponse
-	8,  // 14: user.v1.UserService.ChangePassword:output_type -> user.v1.ChangePasswordResponse
-	10, // 15: user.v1.UserService.DeleteUser:output_type -> user.v1.DeleteUserResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
+	11, // 11: user.v1.UserService.IsAdmin:input_type -> user.v1.IsAdminRequest
+	2,  // 12: user.v1.UserService.UserInfo:output_type -> user.v1.UserInfoResponse
+	4,  // 13: user.v1.UserService.Logout:output_type -> user.v1.LogoutResponse
+	6,  // 14: user.v1.UserService.ChangeEmail:output_type -> user.v1.ChangeEmailResponse
+	8,  // 15: user.v1.UserService.ChangePassword:output_type -> user.v1.ChangePasswordResponse
+	10, // 16: user.v1.UserService.DeleteUser:output_type -> user.v1.DeleteUserResponse
+	12, // 17: user.v1.UserService.IsAdmin:output_type -> user.v1.IsAdminResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -737,7 +829,7 @@ func file_user_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

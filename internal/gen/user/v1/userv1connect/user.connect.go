@@ -44,6 +44,8 @@ const (
 	UserServiceChangePasswordProcedure = "/user.v1.UserService/ChangePassword"
 	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
 	UserServiceDeleteUserProcedure = "/user.v1.UserService/DeleteUser"
+	// UserServiceIsAdminProcedure is the fully-qualified name of the UserService's IsAdmin RPC.
+	UserServiceIsAdminProcedure = "/user.v1.UserService/IsAdmin"
 )
 
 // UserServiceClient is a client for the user.v1.UserService service.
@@ -53,6 +55,7 @@ type UserServiceClient interface {
 	ChangeEmail(context.Context, *connect.Request[v1.ChangeEmailRequest]) (*connect.Response[v1.ChangeEmailResponse], error)
 	ChangePassword(context.Context, *connect.Request[v1.ChangePasswordRequest]) (*connect.Response[v1.ChangePasswordResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
+	IsAdmin(context.Context, *connect.Request[v1.IsAdminRequest]) (*connect.Response[v1.IsAdminResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the user.v1.UserService service. By default, it uses
@@ -96,6 +99,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeleteUser")),
 			connect.WithClientOptions(opts...),
 		),
+		isAdmin: connect.NewClient[v1.IsAdminRequest, v1.IsAdminResponse](
+			httpClient,
+			baseURL+UserServiceIsAdminProcedure,
+			connect.WithSchema(userServiceMethods.ByName("IsAdmin")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -106,6 +115,7 @@ type userServiceClient struct {
 	changeEmail    *connect.Client[v1.ChangeEmailRequest, v1.ChangeEmailResponse]
 	changePassword *connect.Client[v1.ChangePasswordRequest, v1.ChangePasswordResponse]
 	deleteUser     *connect.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
+	isAdmin        *connect.Client[v1.IsAdminRequest, v1.IsAdminResponse]
 }
 
 // UserInfo calls user.v1.UserService.UserInfo.
@@ -133,6 +143,11 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect.Request
 	return c.deleteUser.CallUnary(ctx, req)
 }
 
+// IsAdmin calls user.v1.UserService.IsAdmin.
+func (c *userServiceClient) IsAdmin(ctx context.Context, req *connect.Request[v1.IsAdminRequest]) (*connect.Response[v1.IsAdminResponse], error) {
+	return c.isAdmin.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the user.v1.UserService service.
 type UserServiceHandler interface {
 	UserInfo(context.Context, *connect.Request[v1.UserInfoRequest]) (*connect.Response[v1.UserInfoResponse], error)
@@ -140,6 +155,7 @@ type UserServiceHandler interface {
 	ChangeEmail(context.Context, *connect.Request[v1.ChangeEmailRequest]) (*connect.Response[v1.ChangeEmailResponse], error)
 	ChangePassword(context.Context, *connect.Request[v1.ChangePasswordRequest]) (*connect.Response[v1.ChangePasswordResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
+	IsAdmin(context.Context, *connect.Request[v1.IsAdminRequest]) (*connect.Response[v1.IsAdminResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -179,6 +195,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeleteUser")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceIsAdminHandler := connect.NewUnaryHandler(
+		UserServiceIsAdminProcedure,
+		svc.IsAdmin,
+		connect.WithSchema(userServiceMethods.ByName("IsAdmin")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/user.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceUserInfoProcedure:
@@ -191,6 +213,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceChangePasswordHandler.ServeHTTP(w, r)
 		case UserServiceDeleteUserProcedure:
 			userServiceDeleteUserHandler.ServeHTTP(w, r)
+		case UserServiceIsAdminProcedure:
+			userServiceIsAdminHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -218,4 +242,8 @@ func (UnimplementedUserServiceHandler) ChangePassword(context.Context, *connect.
 
 func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("user.v1.UserService.DeleteUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) IsAdmin(context.Context, *connect.Request[v1.IsAdminRequest]) (*connect.Response[v1.IsAdminResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("user.v1.UserService.IsAdmin is not implemented"))
 }

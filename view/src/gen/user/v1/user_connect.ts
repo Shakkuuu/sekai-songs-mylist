@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { ChangeEmailRequest, ChangeEmailResponse, ChangePasswordRequest, ChangePasswordResponse, DeleteUserRequest, DeleteUserResponse, LogoutRequest, LogoutResponse, UserInfoRequest, UserInfoResponse } from "./user_pb.js";
+import { ChangeEmailRequest, ChangeEmailResponse, ChangePasswordRequest, ChangePasswordResponse, DeleteUserRequest, DeleteUserResponse, IsAdminRequest, IsAdminResponse, LogoutRequest, LogoutResponse, UserInfoRequest, UserInfoResponse } from "./user_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -55,6 +55,15 @@ export const UserService = {
       name: "DeleteUser",
       I: DeleteUserRequest,
       O: DeleteUserResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc user.v1.UserService.IsAdmin
+     */
+    isAdmin: {
+      name: "IsAdmin",
+      I: IsAdminRequest,
+      O: IsAdminResponse,
       kind: MethodKind.Unary,
     },
   }

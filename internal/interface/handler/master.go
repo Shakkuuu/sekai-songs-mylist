@@ -10,6 +10,7 @@ import (
 
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/domain/repository"
 	proto_master "github.com/Shakkuuu/sekai-songs-mylist/internal/gen/master"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 	"github.com/cockroachdb/errors"
 )
@@ -18,10 +19,14 @@ import (
 
 type MasterHandler struct {
 	masterUsecase usecase.MasterUsecase
+	userUsecase   usecase.UserUsecase
 }
 
-func NewMasterHandler(masterUsecase usecase.MasterUsecase) *MasterHandler {
-	return &MasterHandler{masterUsecase: masterUsecase}
+func NewMasterHandler(masterUsecase usecase.MasterUsecase, userUsecase usecase.UserUsecase) *MasterHandler {
+	return &MasterHandler{
+		masterUsecase: masterUsecase,
+		userUsecase:   userUsecase,
+	}
 }
 
 // Artist
@@ -70,14 +75,33 @@ func (h *MasterHandler) GetArtist(ctx context.Context, req *connect.Request[prot
 }
 
 func (h *MasterHandler) CreateArtist(ctx context.Context, req *connect.Request[proto_master.CreateArtistRequest]) (*connect.Response[proto_master.CreateArtistResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateArtist(ctx, req.Msg.GetName(), req.Msg.GetKana())
-	if err != nil {
+	if err := h.masterUsecase.CreateArtist(ctx, req.Msg.GetName(), req.Msg.GetKana()); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInternal, cerr)
@@ -130,14 +154,33 @@ func (h *MasterHandler) GetSinger(ctx context.Context, req *connect.Request[prot
 }
 
 func (h *MasterHandler) CreateSinger(ctx context.Context, req *connect.Request[proto_master.CreateSingerRequest]) (*connect.Response[proto_master.CreateSingerResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateSinger(ctx, req.Msg.GetName())
-	if err != nil {
+	if err := h.masterUsecase.CreateSinger(ctx, req.Msg.GetName()); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInternal, cerr)
@@ -190,14 +233,33 @@ func (h *MasterHandler) GetUnit(ctx context.Context, req *connect.Request[proto_
 }
 
 func (h *MasterHandler) CreateUnit(ctx context.Context, req *connect.Request[proto_master.CreateUnitRequest]) (*connect.Response[proto_master.CreateUnitResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateUnit(ctx, req.Msg.GetName())
-	if err != nil {
+	if err := h.masterUsecase.CreateUnit(ctx, req.Msg.GetName()); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInternal, cerr)
@@ -208,6 +270,26 @@ func (h *MasterHandler) CreateUnit(ctx context.Context, req *connect.Request[pro
 
 // VocalPattern
 func (h *MasterHandler) CreateVocalPattern(ctx context.Context, req *connect.Request[proto_master.CreateVocalPatternRequest]) (*connect.Response[proto_master.CreateVocalPatternResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
@@ -221,8 +303,7 @@ func (h *MasterHandler) CreateVocalPattern(ctx context.Context, req *connect.Req
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateVocalPattern(ctx, req.Msg.GetSongId(), req.Msg.GetName(), req.Msg.GetSingerIds(), req.Msg.GetSingerPositions())
-	if err != nil {
+	if err := h.masterUsecase.CreateVocalPattern(ctx, req.Msg.GetSongId(), req.Msg.GetName(), req.Msg.GetSingerIds(), req.Msg.GetSingerPositions()); err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
 			cerr := errors.WithStack(err)
 			log.Printf("%+v\n", cerr)
@@ -398,6 +479,26 @@ func (h *MasterHandler) GetSong(ctx context.Context, req *connect.Request[proto_
 }
 
 func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[proto_master.CreateSongRequest]) (*connect.Response[proto_master.CreateSongResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
@@ -411,14 +512,13 @@ func (h *MasterHandler) CreateSong(ctx context.Context, req *connect.Request[pro
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateSong(
+	if err := h.masterUsecase.CreateSong(
 		ctx, req.Msg.GetName(), req.Msg.GetKana(),
 		req.Msg.GetLyricsId(), req.Msg.GetMusicId(), req.Msg.GetArrangementId(),
 		req.Msg.GetThumbnail(), req.Msg.GetOriginalVideo(), req.Msg.GetReleaseTime().AsTime(), req.Msg.GetDeleted(),
 		req.Msg.GetUnitIds(),
 		req.Msg.GetMusicVideoTypes(),
-	)
-	if err != nil {
+	); err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
 			cerr := errors.WithStack(err)
 			log.Printf("%+v\n", cerr)
@@ -609,16 +709,35 @@ func (h *MasterHandler) GetChart(ctx context.Context, req *connect.Request[proto
 	}), nil
 }
 func (h *MasterHandler) CreateChart(ctx context.Context, req *connect.Request[proto_master.CreateChartRequest]) (*connect.Response[proto_master.CreateChartResponse], error) {
+	id, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		err := errors.New("user id not found in context")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeUnauthenticated, cerr)
+	}
+	isAdmin, err := h.userUsecase.IsAdmin(ctx, id)
+	if err != nil {
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodeInternal, cerr)
+	}
+	if !isAdmin {
+		err := errors.New("permission denied: not admin")
+		cerr := errors.WithStack(err)
+		log.Printf("%+v\n", cerr)
+		return nil, connect.NewError(connect.CodePermissionDenied, cerr)
+	}
+
 	if err := req.Msg.Validate(); err != nil {
 		cerr := errors.WithStack(err)
 		log.Printf("%+v\n", cerr)
 		return nil, connect.NewError(connect.CodeInvalidArgument, cerr)
 	}
 
-	err := h.masterUsecase.CreateChart(
+	if err := h.masterUsecase.CreateChart(
 		ctx, req.Msg.GetSongId(), int32(req.Msg.GetDifficultyType()), req.Msg.GetLevel(), req.Msg.GetChartViewLink(),
-	)
-	if err != nil {
+	); err != nil {
 		if errors.Is(err, usecase.ErrInvalidArgument) {
 			cerr := errors.WithStack(err)
 			log.Printf("%+v\n", cerr)

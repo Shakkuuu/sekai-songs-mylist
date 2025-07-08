@@ -24,7 +24,7 @@ import (
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/handler"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/interface/repository"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/auth"
-	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/mail"
+	"github.com/Shakkuuu/sekai-songs-mylist/internal/pkg/googleoauth"
 	"github.com/Shakkuuu/sekai-songs-mylist/internal/usecase"
 )
 
@@ -68,7 +68,7 @@ func main() {
 		}
 	}()
 
-	if err := mail.Init(); err != nil {
+	if err := googleoauth.Init(); err != nil {
 		log.Println(err)
 		log.Printf("Failed to initialize mail: \n%+v\n", err)
 		os.Exit(1)
@@ -76,16 +76,17 @@ func main() {
 
 	redisMasterCacheRepository := repository.NewRedisMasterCacheRepository(rc)
 	masterRepository := repository.NewMasterRepository(queries)
-	masterUsecase := usecase.NewMasterUsecase(masterRepository, redisMasterCacheRepository)
-	masterHandler := handler.NewMasterHandler(masterUsecase)
 	userRepository := repository.NewUserRepository(queries)
+	masterUsecase := usecase.NewMasterUsecase(masterRepository, redisMasterCacheRepository)
 	userUsecase := usecase.NewUserUsecase(userRepository)
+	masterHandler := handler.NewMasterHandler(masterUsecase, userUsecase)
 	authUsecase := usecase.NewAuthUsecase(userRepository)
 	authHandler := handler.NewAuthHandler(authUsecase, userUsecase)
 	userHandler := handler.NewUserHandler(userUsecase)
 	myListRepository := repository.NewMyListRepository(queries)
 	myListUsecase := usecase.NewMyListUsecase(myListRepository, masterRepository, redisMasterCacheRepository)
 	myListHandler := handler.NewMyListHandler(myListUsecase)
+	strageHandler := handler.NewStorageHandler()
 
 	mux := http.NewServeMux()
 	mux.Handle(
@@ -113,6 +114,10 @@ func main() {
 
 	mux.HandleFunc("/verify", authHandler.VerifyEmailHandler)
 	mux.HandleFunc("/verify/resend", authHandler.ResendVerifyEmailHandler)
+	mux.HandleFunc("/upload/thumbnail", strageHandler.UploadThumbnailHandler)
+	mux.HandleFunc("/upload/attachment", strageHandler.UploadAttachmentHandler)
+	mux.HandleFunc("/image", strageHandler.GetImageHandler)
+	mux.HandleFunc("/delete/attachment", strageHandler.DeleteAttachmentHandler)
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{cfg.FrontEndURL}, // フロントエンドのURL

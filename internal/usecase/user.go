@@ -24,6 +24,7 @@ type UserUsecase interface {
 	ChangeEmail(ctx context.Context, id, email string) (*entity.User, error)
 	ChangePassword(ctx context.Context, id, oldPassword, newPassword string) (*entity.User, error)
 	DeleteUser(ctx context.Context, id string) error
+	IsAdmin(ctx context.Context, id string) (bool, error)
 }
 
 type userUsecase struct {
@@ -157,4 +158,26 @@ func (u *userUsecase) DeleteUser(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (u *userUsecase) IsAdmin(ctx context.Context, id string) (bool, error) {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+
+	exist, err := u.userRepo.ExistsUserByID(ctx, parsedID)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+	if !exist {
+		return false, errors.WithStack(ErrUserNotFound)
+	}
+
+	isAdmin, err := u.userRepo.IsAdminByID(ctx, parsedID)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+
+	return isAdmin, nil
 }
